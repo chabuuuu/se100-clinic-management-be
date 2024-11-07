@@ -59,27 +59,6 @@ public class PatientSpecification {
         };
     }
 
-    // Lọc bệnh nhân theo độ tuổi trong một khoảng (từ tuổi tối thiểu đến tuổi tối
-    // đa)
-    public static Specification<Patient> ageBetween(Integer minAge, Integer maxAge) {
-        return (root, query, criteriaBuilder) -> {
-            LocalDate today = LocalDate.now();
-
-            if (minAge != null && maxAge != null) {
-                return criteriaBuilder.between(
-                        root.get("birthday"),
-                        today.minusYears(maxAge),
-                        today.minusYears(minAge));
-            } else if (minAge != null) {
-                return criteriaBuilder.lessThanOrEqualTo(root.get("birthday"), today.minusYears(minAge));
-            } else if (maxAge != null) {
-                return criteriaBuilder.greaterThanOrEqualTo(root.get("birthday"), today.minusYears(maxAge));
-            } else {
-                return criteriaBuilder.conjunction();
-            }
-        };
-    }
-
     // Tìm kiếm bệnh nhân theo từ khóa trong tên hoặc số trong số điện thoại
     public static Specification<Patient> searchKeyword(String keyword) {
         return (root, query, criteriaBuilder) -> {
