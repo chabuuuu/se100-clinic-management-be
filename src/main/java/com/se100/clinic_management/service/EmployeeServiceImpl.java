@@ -58,12 +58,13 @@ public class EmployeeServiceImpl implements iEmployeeService {
 
     // Lấy danh sách nhân viên với phân trang, tìm kiếm và lọc
     @Override
-    // Phương thức lọc với nhiều tiêu chí
-    public Page<Employee> getEmployees(String fullname, String role, LocalDate startDate, LocalDate endDate,
-            Pageable pageable) {
+    public Page<Employee> getEmployees(String fullname, String role, LocalDate createdAfter, LocalDate createdBefore,
+            String search, Pageable pageable) {
         Specification<Employee> spec = Specification.where(EmployeeSpecification.fullnameContains(fullname))
                 .and(EmployeeSpecification.hasRole(role))
-                .and(EmployeeSpecification.createdBetween(startDate, endDate));
+                .and(EmployeeSpecification.createdAfter(createdAfter))
+                .and(EmployeeSpecification.createdBefore(createdBefore))
+                .and(EmployeeSpecification.searchKeyword(search));
 
         return employeeRepository.findAll(spec, pageable);
     }

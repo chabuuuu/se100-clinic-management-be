@@ -79,4 +79,17 @@ public class PatientSpecification {
             }
         };
     }
+
+    // Tìm kiếm bệnh nhân theo từ khóa trong tên hoặc số trong số điện thoại
+    public static Specification<Patient> searchKeyword(String keyword) {
+        return (root, query, criteriaBuilder) -> {
+            if (keyword == null || keyword.trim().isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            String searchPattern = "%" + keyword.trim() + "%";
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(root.get("fullname"), searchPattern),
+                    criteriaBuilder.like(root.get("phoneNumber"), searchPattern));
+        };
+    }
 }

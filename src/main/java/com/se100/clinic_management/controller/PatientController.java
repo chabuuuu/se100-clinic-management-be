@@ -50,13 +50,14 @@ public class PatientController {
       @RequestParam(required = false) String createdBefore,
       @RequestParam(required = false) Integer minAge,
       @RequestParam(required = false) Integer maxAge,
+      @RequestParam(required = false) String search,
       Pageable pageable) {
 
     LocalDate createdAfterDate = createdAfter != null ? LocalDate.parse(createdAfter) : null;
     LocalDate createdBeforeDate = createdBefore != null ? LocalDate.parse(createdBefore) : null;
 
     return patientServiceImpl.getPatients(fullname, gender, phoneNumber, createdAfterDate, createdBeforeDate, minAge,
-        maxAge, pageable);
+        maxAge, search, pageable);
   }
 
 }

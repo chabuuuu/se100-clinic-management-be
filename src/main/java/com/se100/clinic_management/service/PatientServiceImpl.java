@@ -57,7 +57,8 @@ public class PatientServiceImpl implements iPatientService {
   // Lấy danh sách bệnh nhân với phân trang, tìm kiếm và lọc
   @Override
   public Page<Patient> getPatients(String fullname, Boolean gender, String phoneNumber,
-      LocalDate createdAfter, LocalDate createdBefore, Integer minAge, Integer maxAge, Pageable pageable) {
+      LocalDate createdAfter, LocalDate createdBefore, Integer minAge, Integer maxAge, String search,
+      Pageable pageable) {
 
     Specification<Patient> spec = Specification.where(PatientSpecification.fullnameContains(fullname))
         .and(PatientSpecification.hasGender(gender))
@@ -65,7 +66,8 @@ public class PatientServiceImpl implements iPatientService {
         .and(PatientSpecification.createdAfter(createdAfter))
         .and(PatientSpecification.createdBefore(createdBefore))
         .and(PatientSpecification.hasMinAge(minAge))
-        .and(PatientSpecification.hasMaxAge(maxAge));
+        .and(PatientSpecification.hasMaxAge(maxAge))
+        .and(PatientSpecification.searchKeyword(search));
 
     return patientRepository.findAll(spec, pageable);
   }

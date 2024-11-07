@@ -31,8 +31,16 @@ public class EmployeeSpecification {
         : criteriaBuilder.lessThanOrEqualTo(root.get("createAt"), date);
   }
 
-  // Lọc nhân viên theo ngày tạo trong khoảng
-  public static Specification<Employee> createdBetween(LocalDate startDate, LocalDate endDate) {
-    return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("createAt"), startDate, endDate);
+  // Tìm kiếm nhân viên theo từ khóa trong tên hoặc email
+  public static Specification<Employee> searchKeyword(String keyword) {
+    return (root, query, criteriaBuilder) -> {
+      if (keyword == null || keyword.trim().isEmpty()) {
+        return criteriaBuilder.conjunction();
+      }
+      String searchPattern = "%" + keyword.trim() + "%";
+      return criteriaBuilder.or(
+          criteriaBuilder.like(root.get("fullname"), searchPattern),
+          criteriaBuilder.like(root.get("email"), searchPattern));
+    };
   }
 }

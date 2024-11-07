@@ -14,5 +14,6 @@ public interface iEmployeeService {
 
     Employee updateEmployee(int id, Employee employeeDetails);
 
-    Page<Employee> getEmployees(String role, String name, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    Page<Employee> getEmployees(String role, String name, LocalDate createdAfter, LocalDate createdBefore,
+            String search, Pageable pageable);
 }
