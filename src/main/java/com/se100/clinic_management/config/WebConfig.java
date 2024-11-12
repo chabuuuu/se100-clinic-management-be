@@ -1,4 +1,4 @@
-package com.se100.clinic_management.Config;
+package com.se100.clinic_management.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
