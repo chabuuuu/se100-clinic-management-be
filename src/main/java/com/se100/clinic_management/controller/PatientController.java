@@ -1,7 +1,8 @@
 package com.se100.clinic_management.controller;
 
+import com.se100.clinic_management.Interface.iPatientService;
 import com.se100.clinic_management.model.Patient;
-import com.se100.clinic_management.service.PatientServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,26 +14,26 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/patients")
+@RequiredArgsConstructor
 public class PatientController {
 
-  @Autowired
-  private PatientServiceImpl patientServiceImpl;
+  private final iPatientService patientService;
 
   @PostMapping("/add")
   public ResponseEntity<Patient> addPatient(@RequestBody Patient patient) {
-    return new ResponseEntity<>(patientServiceImpl.savePatient(patient), HttpStatus.CREATED);
+    return new ResponseEntity<>(patientService.savePatient(patient), HttpStatus.CREATED);
   }
 
   @DeleteMapping("/delete/{id}")
   public ResponseEntity<String> deletePatient(@PathVariable int id) {
-    patientServiceImpl.deletePatient(id);
+    patientService.deletePatient(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
         .body("Employee deleted successfully with ID: " + id);
   }
 
   @PutMapping("/update/{id}")
   public ResponseEntity<String> updatePatient(@PathVariable int id, @RequestBody Patient patient) {
-    Patient updatedPatient = patientServiceImpl.updatePatient(id, patient);
+    Patient updatedPatient = patientService.updatePatient(id, patient);
     return ResponseEntity.ok("Employee updated successfully with ID: " + updatedPatient.getId());
   }
 
@@ -56,7 +57,7 @@ public class PatientController {
     LocalDate createdAfterDate = createdAfter != null ? LocalDate.parse(createdAfter) : null;
     LocalDate createdBeforeDate = createdBefore != null ? LocalDate.parse(createdBefore) : null;
 
-    return patientServiceImpl.getPatients(fullname, gender, phoneNumber, createdAfterDate, createdBeforeDate, minAge,
+    return patientService.getPatients(fullname, gender, phoneNumber, createdAfterDate, createdBeforeDate, minAge,
         maxAge, search, pageable);
   }
 

@@ -2,7 +2,17 @@ package com.se100.clinic_management.controller;
 
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.se100.clinic_management.Interface.iEmployeeService;
+import com.se100.clinic_management.dto.employee.RefreshTokenReq;
+import com.se100.clinic_management.dto.employee.RefreshTokenRes;
+import com.se100.clinic_management.dto.base_format.ResponseVO;
+import com.se100.clinic_management.dto.employee.EmployeeLoginReq;
+import com.se100.clinic_management.dto.employee.EmployeeLoginRes;
+import com.se100.clinic_management.exception.BaseError;
+import com.se100.clinic_management.utils.ResponseEntityGenerator;
+import com.se100.clinic_management.utils.SecurityUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,35 +26,59 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.se100.clinic_management.model.Employee;
-import com.se100.clinic_management.service.EmployeeServiceImpl;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("api/employees")
+@RequiredArgsConstructor
 public class EmployeeController {
 
-  @Autowired
-  private EmployeeServiceImpl employeeServiceImpl;
+  private final iEmployeeService employeeService;
+
+  @SneakyThrows
+  @PostMapping("/refresh-token")
+  public ResponseEntity<RefreshTokenRes> refreshAccessToken(@RequestBody RefreshTokenReq request) {
+    try {
+      String refreshToken = request.getRefreshToken();
+      var decodedJWT = SecurityUtil.validate(refreshToken);
+      var jwtTokenVo = SecurityUtil.getValueObject(decodedJWT);
+      var newAccessToken = SecurityUtil.createToken(jwtTokenVo);
+
+      RefreshTokenRes response = new RefreshTokenRes();
+      response.setAccessToken(newAccessToken);
+      response.setRefreshToken(refreshToken);
+
+      return ResponseEntity.ok(response);
+    } catch (Exception e) {
+      throw new BaseError("INVALID_REFRESH_TOKEN", "Invalid refresh token", HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<ResponseVO> login(@RequestBody EmployeeLoginReq employeeLoginReq) {
+    EmployeeLoginRes result = employeeService.login(employeeLoginReq);
+    return ResponseEntityGenerator.okFormat(result);
+  }
 
   @PostMapping("/add")
   public ResponseEntity<String> addEmployee(@RequestBody Employee employee) {
-    Employee createdEmployee = employeeServiceImpl.addEmployee(employee);
+    Employee createdEmployee = employeeService.addEmployee(employee);
     return ResponseEntity.status(HttpStatus.CREATED)
         .body("Employee created successfully with ID: " + createdEmployee.getId());
   }
 
   @DeleteMapping("delete/{id}")
   public ResponseEntity<String> deleteEmployee(@PathVariable int id) {
-    employeeServiceImpl.deleteEmployee(id);
+    employeeService.deleteEmployee(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT)
         .body("Employee deleted successfully with ID: " + id);
   }
 
   @PutMapping("update/{id}")
   public ResponseEntity<String> updateEmployee(@PathVariable int id, @RequestBody Employee employeeDetails) {
-    Employee updatedEmployee = employeeServiceImpl.updateEmployee(id, employeeDetails);
+    Employee updatedEmployee = employeeService.updateEmployee(id, employeeDetails);
     return ResponseEntity.ok("Employee updated successfully with ID: " + updatedEmployee.getId());
   }
 
@@ -63,6 +97,6 @@ public class EmployeeController {
     LocalDate createdAfterDate = createdAfter != null ? LocalDate.parse(createdAfter) : null;
     LocalDate createdBeforeDate = createdBefore != null ? LocalDate.parse(createdBefore) : null;
 
-    return employeeServiceImpl.getEmployees(fullname, role, createdAfterDate, createdBeforeDate, search, pageable);
+    return employeeService.getEmployees(fullname, role, createdAfterDate, createdBeforeDate, search, pageable);
   }
 }
