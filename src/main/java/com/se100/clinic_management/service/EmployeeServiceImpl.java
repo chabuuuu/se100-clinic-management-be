@@ -42,9 +42,8 @@ public class EmployeeServiceImpl implements iEmployeeService {
         JwtTokenVo jwtTokenVo = new JwtTokenVo(employee.getId(), employee.getUsername(), List.of(employee.getRole()));
 
         String accessToken = SecurityUtil.createToken(jwtTokenVo);
-        String refreshToken = SecurityUtil.createRefreshToken(jwtTokenVo);
 
-        return new EmployeeLoginRes(accessToken, refreshToken);
+        return new EmployeeLoginRes(accessToken);
     }
 
     // Thêm nhân viên mới
