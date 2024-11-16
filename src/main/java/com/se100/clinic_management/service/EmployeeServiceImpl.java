@@ -1,23 +1,50 @@
 package com.se100.clinic_management.service;
 
-import java.time.LocalDate;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.se100.clinic_management.Interface.iEmployeeService;
+import com.se100.clinic_management.dto.JwtTokenVo;
+import com.se100.clinic_management.dto.employee.EmployeeLoginReq;
+import com.se100.clinic_management.dto.employee.EmployeeLoginRes;
+import com.se100.clinic_management.exception.BaseError;
+import com.se100.clinic_management.model.Employee;
+import com.se100.clinic_management.repository.EmployeeRepository;
+import com.se100.clinic_management.specification.EmployeeSpecification;
+import com.se100.clinic_management.utils.SecurityUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.se100.clinic_management.specification.EmployeeSpecification;
-import com.se100.clinic_management.Interface.iEmployeeService;
-import com.se100.clinic_management.model.Employee;
-import com.se100.clinic_management.repository.EmployeeRepository;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class EmployeeServiceImpl implements iEmployeeService {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
+
+    @SneakyThrows
+    @Override
+    public EmployeeLoginRes login(EmployeeLoginReq employeeLoginReq) {
+        Employee employee = employeeRepository.findByUsername(employeeLoginReq.getUsername()).orElse(null);
+
+        if (employee == null){
+            throw new BaseError("USER_NOT_FOUND", "User not found", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!employee.getPassword().equals(employeeLoginReq.getPassword())){
+            throw new BaseError("WRONG_PASSWORD", "Wrong password", HttpStatus.BAD_REQUEST);
+        }
+
+        JwtTokenVo jwtTokenVo = new JwtTokenVo(employee.getId(), employee.getUsername(), List.of(employee.getRole()));
+
+        String accessToken = SecurityUtil.createToken(jwtTokenVo);
+
+        return new EmployeeLoginRes(accessToken);
+    }
 
     // Thêm nhân viên mới
     @Override

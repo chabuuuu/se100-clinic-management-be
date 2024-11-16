@@ -21,23 +21,14 @@ import java.util.Arrays;
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, LazySecurityContextProviderFilter lazySecurityContextProviderFilter) throws Exception {
-        String API_ROOT = "/api/v1";
-        String CUSTOMER = "CUSTOMER";
-        String ADMIN = "ADMIN";
-        String ACCOUNTANT = "ACCOUNTANT";
-        String BOOKER = "BOOKER";
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(se -> se.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> {
-//                    a.requestMatchers(API_ROOT+ "/business/createflightbooking");
-
                     a.anyRequest().permitAll();
                 })
                 .addFilterAfter(lazySecurityContextProviderFilter, SessionManagementFilter.class);
-
-
 
         return http.build();
     }

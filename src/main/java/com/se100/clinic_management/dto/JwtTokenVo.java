@@ -21,7 +21,6 @@ import static lombok.AccessLevel.PRIVATE;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JwtTokenVo {
     Integer userId;
-    String businessSecret;
     String username;
     List<String> roles;
 
