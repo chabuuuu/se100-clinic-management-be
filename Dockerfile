@@ -1,5 +1,3 @@
-LABEL authors="haphuthinh"
-
 FROM openjdk:21-jdk-slim AS build
 ENV HOME=/usr/app
 RUN mkdir -p $HOME
