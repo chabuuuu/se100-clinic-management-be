@@ -4,7 +4,7 @@ services:
 
   backend-clinic-management:
     container_name: backend-clinic-management
-    image: haphuthinh/backend-clinic-management
+    image: haphuthinh/backend-clinic-management:latest
     restart: unless-stopped
     env_file:
       - .env
