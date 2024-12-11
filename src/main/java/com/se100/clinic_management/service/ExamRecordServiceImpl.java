@@ -7,7 +7,6 @@ import com.se100.clinic_management.dto.exam_record.ExamRecordDetailRes;
 import com.se100.clinic_management.model.ExamRecord;
 import com.se100.clinic_management.repository.ExamRecordRepository;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,8 @@ public class ExamRecordServiceImpl implements iExamRecordService {
 
         ExamRecord createdExamRecord = examRecordRepository.save(examRecord);
 
-        //Compare exam record id with latest exam record id in redis, get the one with the highest id
+        // Compare exam record id with latest exam record id in redis, get the one with
+        // the highest id
         redisTemplate.opsForValue().set("latest_exam_record_id", createdExamRecord.getId());
 
         ExamRecordCreateRes examRecordCreateRes = new ExamRecordCreateRes();
@@ -57,7 +57,7 @@ public class ExamRecordServiceImpl implements iExamRecordService {
     public int getExamRecordId() {
         Integer latestExamRecordId = (Integer) redisTemplate.opsForValue().get("latest_exam_record_id");
 
-        if (latestExamRecordId != null){
+        if (latestExamRecordId != null) {
             redisTemplate.opsForValue().set("latest_exam_record_id", latestExamRecordId + 1);
 
             return latestExamRecordId + 1;
@@ -69,7 +69,7 @@ public class ExamRecordServiceImpl implements iExamRecordService {
     @Override
     public ExamRecordDetailRes getExamRecordDetail(int examRecordId) {
         ExamRecord examRecord = examRecordRepository.findById(examRecordId).orElse(null);
-        if (examRecord == null){
+        if (examRecord == null) {
             return null;
         }
 

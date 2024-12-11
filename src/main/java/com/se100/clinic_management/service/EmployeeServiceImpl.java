@@ -31,11 +31,11 @@ public class EmployeeServiceImpl implements iEmployeeService {
     public EmployeeLoginRes login(EmployeeLoginReq employeeLoginReq) {
         Employee employee = employeeRepository.findByUsername(employeeLoginReq.getUsername()).orElse(null);
 
-        if (employee == null){
+        if (employee == null) {
             throw new BaseError("USER_NOT_FOUND", "User not found", HttpStatus.BAD_REQUEST);
         }
 
-        if (!employee.getPassword().equals(employeeLoginReq.getPassword())){
+        if (!employee.getPassword().equals(employeeLoginReq.getPassword())) {
             throw new BaseError("WRONG_PASSWORD", "Wrong password", HttpStatus.BAD_REQUEST);
         }
 
@@ -60,7 +60,11 @@ public class EmployeeServiceImpl implements iEmployeeService {
     public void deleteEmployee(int id) {
         // Kiểm tra xem nhân viên có tồn tại không trước khi xóa (tuỳ chọn)
         if (employeeRepository.existsById(id)) {
-            employeeRepository.deleteById(id);
+            Employee employee = employeeRepository.findById(id).orElse(null);
+            if (employee != null) {
+                employee.setDeleteAt(java.time.LocalDateTime.now());
+                employeeRepository.save(employee);
+            }
         }
     }
 
@@ -81,6 +85,12 @@ public class EmployeeServiceImpl implements iEmployeeService {
         } else {
             throw new RuntimeException("Employee not found");
         }
+    }
+
+    // Lấy thông tin nhân viên theo id
+    @Override
+    public Employee getEmployeeById(int id) {
+        return employeeRepository.findById(id).orElse(null);
     }
 
     // Lấy danh sách nhân viên với phân trang, tìm kiếm và lọc

@@ -82,9 +82,18 @@ public class EmployeeController {
     return ResponseEntity.ok("Employee updated successfully with ID: " + updatedEmployee.getId());
   }
 
-  // url example:
+  @GetMapping("get/{id}")
+  public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) {
+    Employee employee = employeeService.getEmployeeById(id);
+    return ResponseEntity.ok(employee);
+  }
+
+  // (Filter + Sort) and Pagination
   // api/employees?role=DOCTOR&createdAfter=2024-01-01&createdBefore=2024-11-30&page=0&size=5&sort=id,asc
-  // Lọc nhân viên theo nhiều tham số (tên, vai trò, ngày tạo)
+
+  // Search
+  // api/employees?search=nguyen
+
   @GetMapping
   public Page<Employee> getEmployees(
       @RequestParam(required = false) String fullname,

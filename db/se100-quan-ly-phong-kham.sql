@@ -92,28 +92,36 @@ CREATE TABLE `invoices` (
 );
 
 CREATE TABLE `medicines` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
-  `create_at` datetime,
-  `update_at` datetime,
-  `create_by` varchar(70),
-  `update_by` varchar(70),
-  `delete_at` datetime
-);
+  `create_at` datetime DEFAULT NULL,
+  `update_at` datetime DEFAULT NULL,
+  `create_by` varchar(70) DEFAULT NULL,
+  `update_by` varchar(70) DEFAULT NULL,
+  `delete_at` datetime DEFAULT NULL,
+  `ingredient` text,
+  `dosage_form` varchar(100) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `medicine_batches` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
-  `amount` int,
-  `price` decimal(10,2),
-  `quantity` int,
-  `expire_date` date,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `amount` int DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `quantity` int DEFAULT NULL,
+  `expire_date` date DEFAULT NULL,
   `medicine_id` int NOT NULL,
-  `create_at` datetime,
-  `update_at` datetime,
-  `create_by` varchar(70),
-  `update_by` varchar(70),
-  `delete_at` datetime
-);
+  `manufacturer` varchar(60) DEFAULT NULL,
+  `create_at` datetime DEFAULT NULL,
+  `update_at` datetime DEFAULT NULL,
+  `create_by` varchar(70) DEFAULT NULL,
+  `update_by` varchar(70) DEFAULT NULL,
+  `delete_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `medicine_id` (`medicine_id`),
+  CONSTRAINT `medicine_batches_ibfk_1` FOREIGN KEY (`medicine_id`) REFERENCES `medicines` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `prescription_details` (
   `prescription_id` int,

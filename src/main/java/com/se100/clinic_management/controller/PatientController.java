@@ -3,7 +3,6 @@ package com.se100.clinic_management.controller;
 import com.se100.clinic_management.Interface.iPatientService;
 import com.se100.clinic_management.model.Patient;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
