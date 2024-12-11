@@ -129,6 +129,49 @@ CREATE TABLE `prescription_details` (
   PRIMARY KEY (`prescription_id`, `medicine_batche_id`)
 );
 
+CREATE TABLE `service_types` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `service_name` varchar(100) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_by` varchar(70) DEFAULT NULL,
+  `update_by` varchar(70) DEFAULT NULL,
+  `delete_at` datetime DEFAULT NULL,
+  `type` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `service_records` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `description` text,
+  `patient_id` int NOT NULL,
+  `receptionist_id` int NOT NULL,
+  `create_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `create_by` varchar(70) DEFAULT NULL,
+  `update_by` varchar(70) DEFAULT NULL,
+  `delete_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `service_records_ibfk_1` (`patient_id`),
+  KEY `service_records_ibfk_2` (`receptionist_id`),
+  CONSTRAINT `service_records_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`),
+  CONSTRAINT `service_records_ibfk_2` FOREIGN KEY (`receptionist_id`) REFERENCES `employees` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `service_ratings` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `score` int NOT NULL,
+  `feedback` text NOT NULL,
+  `create_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `update_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `delete_At` datetime DEFAULT NULL,
+  `patient_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `service_ratings_patients_id_fk` (`patient_id`),
+  CONSTRAINT `service_ratings_patients_id_fk` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 ALTER TABLE `exam_records` ADD FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`);
 
 ALTER TABLE `exam_records` ADD FOREIGN KEY (`doctor_id`) REFERENCES `employees` (`id`);

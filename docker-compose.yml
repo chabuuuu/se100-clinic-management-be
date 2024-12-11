@@ -6,8 +6,8 @@ services:
     container_name: backend-clinic-management
     image: haphuthinh/backend-clinic-management:latest
     restart: unless-stopped
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     ports:
       - "7068:8080"
     deploy:
