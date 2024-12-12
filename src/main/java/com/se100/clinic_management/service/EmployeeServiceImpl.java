@@ -11,6 +11,8 @@ import com.se100.clinic_management.specification.EmployeeSpecification;
 import com.se100.clinic_management.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements iEmployeeService {
 
+    @Autowired
     private final EmployeeRepository employeeRepository;
 
     @SneakyThrows

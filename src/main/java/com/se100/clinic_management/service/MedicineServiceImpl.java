@@ -8,6 +8,7 @@ import com.se100.clinic_management.Interface.iMedicineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -60,8 +61,15 @@ public class MedicineServiceImpl implements iMedicineService {
 
   // Lấy danh sách thuốc với phân trang, lọc
   @Override
-  public Page<Medicine> getMedicines(String name, Pageable pageable) {
-    Specification<Medicine> spec = MedicineSpecification.hasName(name);
+  public Page<Medicine> getMedicines(String name,
+      String createBy,
+      LocalDateTime updatedAfter,
+      String ingredient,
+      String dosageForm,
+      BigDecimal minPrice,
+      BigDecimal maxPrice, Pageable pageable) {
+    Specification<Medicine> spec = MedicineSpecification.filter(name, dosageForm, updatedAfter, dosageForm, dosageForm,
+        maxPrice, maxPrice);
     return medicineRepository.findAll(spec, pageable);
   }
 }

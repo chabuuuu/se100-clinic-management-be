@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ExamRecordServiceImpl implements iExamRecordService {
+
+    @Autowired
     private final ExamRecordRepository examRecordRepository;
 
     @Autowired

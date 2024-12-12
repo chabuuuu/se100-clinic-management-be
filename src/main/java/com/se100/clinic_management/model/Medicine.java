@@ -1,5 +1,6 @@
 package com.se100.clinic_management.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,5 +49,5 @@ public class Medicine {
   private String dosageForm;
 
   @Column(name = "price", precision = 10, scale = 2)
-  private double price;
+  private BigDecimal price;
 }

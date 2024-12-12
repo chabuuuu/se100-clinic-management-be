@@ -1,5 +1,8 @@
 package com.se100.clinic_management.controller;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,11 +19,15 @@ import com.se100.clinic_management.dto.base_format.ResponseVO;
 import com.se100.clinic_management.model.Medicine;
 import com.se100.clinic_management.service.MedicineServiceImpl;
 import com.se100.clinic_management.utils.ResponseEntityGenerator;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/medicines")
+@RequiredArgsConstructor
 public class MedicineController {
 
   @Autowired
@@ -49,7 +56,14 @@ public class MedicineController {
 
   // find medicine by name
   @GetMapping
-  public Page<Medicine> getMedicineByName(@RequestParam(required = false) String name, Pageable pageable) {
-    return medicineService.getMedicines(name, pageable);
+  public Page<Medicine> getMedicineByName(@RequestParam(required = false) String name,
+      @RequestParam(required = false) String createBy,
+      @RequestParam(required = false) LocalDateTime updatedAfter,
+      @RequestParam(required = false) String ingredient,
+      @RequestParam(required = false) String dosageForm,
+      @RequestParam(required = false) BigDecimal minPrice,
+      @RequestParam(required = false) BigDecimal maxPrice, Pageable pageable) {
+    return medicineService.getMedicines(name, dosageForm, updatedAfter, dosageForm, dosageForm, maxPrice, maxPrice,
+        pageable);
   }
 }

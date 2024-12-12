@@ -1,9 +1,12 @@
 package com.se100.clinic_management.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +30,7 @@ public class MedicineBatch {
   private int amount;
 
   @Column(name = "price", precision = 10, scale = 2)
-  private double price;
+  private BigDecimal price;
 
   @Column(name = "quantity")
   private int quantity;

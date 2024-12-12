@@ -7,7 +7,9 @@ import com.se100.clinic_management.Interface.iMedicineBatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -55,12 +57,19 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
     medicineBatchRepository.save(existingBatch);
   }
 
-  // filter and search and pagination
+  // filter and pagination
   @Override
-  public Page<MedicineBatch> getMedicineBatches(int medicineId, boolean isExpired, double minPrice,
-      double maxPrice, Pageable pageable) {
+  public Page<MedicineBatch> getMedicineBatches(Integer medicineId,
+      BigDecimal minPrice,
+      BigDecimal maxPrice,
+      Boolean isExpired,
+      Date startDate,
+      Date endDate,
+      Boolean isActive,
+      Integer minQuantity,
+      Pageable pageable) {
     Specification<MedicineBatch> spec = MedicineBatchSpecification.filter(medicineId, minPrice,
-        maxPrice, isExpired);
+        maxPrice, isExpired, endDate, endDate, isActive, minQuantity);
     return medicineBatchRepository.findAll(spec, pageable);
   }
 }

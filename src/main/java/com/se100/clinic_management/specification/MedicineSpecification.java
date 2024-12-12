@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +22,8 @@ public class MedicineSpecification {
       LocalDateTime updatedAfter,
       String ingredient,
       String dosageForm,
-      double minPrice,
-      double maxPrice) {
+      BigDecimal minPrice,
+      BigDecimal maxPrice) {
     return (Root<Medicine> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
@@ -46,11 +47,11 @@ public class MedicineSpecification {
         predicates.add(builder.like(root.get("dosageForm"), "%" + dosageForm + "%"));
       }
 
-      if (minPrice > 0) {
+      if (minPrice != null) {
         predicates.add(builder.greaterThanOrEqualTo(root.get("price"), minPrice));
       }
 
-      if (maxPrice > 0) {
+      if (maxPrice != null) {
         predicates.add(builder.lessThanOrEqualTo(root.get("price"), maxPrice));
       }
 
