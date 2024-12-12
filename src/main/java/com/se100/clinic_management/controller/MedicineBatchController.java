@@ -8,7 +8,7 @@ import com.se100.clinic_management.utils.ResponseEntityGenerator;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,12 +50,13 @@ public class MedicineBatchController {
   }
 
   @GetMapping
-  public Page<MedicineBatch> getMedicineBatches(@RequestParam(required = false) Integer medicineId,
+  public Page<MedicineBatch> getMedicineBatches(
+      @RequestParam(required = false) Integer medicineId,
       @RequestParam(required = false) BigDecimal minPrice,
       @RequestParam(required = false) BigDecimal maxPrice,
       @RequestParam(required = false) Boolean isExpired,
-      @RequestParam(required = false) Date startDate,
-      @RequestParam(required = false) Date endDate,
+      @RequestParam(required = false) LocalDateTime startDate,
+      @RequestParam(required = false) LocalDateTime endDate,
       @RequestParam(required = false) Boolean isActive,
       @RequestParam(required = false) Integer minQuantity,
       Pageable pageable) {

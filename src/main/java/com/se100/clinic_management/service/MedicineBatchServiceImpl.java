@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -30,6 +29,7 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
 
   @Override
   public MedicineBatch createMedicineBatch(MedicineBatch medicineBatch) {
+    medicineBatch.setCreateAt(LocalDateTime.now());
     return medicineBatchRepository.save(medicineBatch);
   }
 
@@ -43,7 +43,7 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
     existingBatch.setMedicineId(medicineBatch.getMedicineId());
     existingBatch.setManufacturer(medicineBatch.getManufacturer());
     existingBatch.setCreateAt(medicineBatch.getCreateAt());
-    existingBatch.setUpdateAt(medicineBatch.getUpdateAt());
+    existingBatch.setUpdateAt(LocalDateTime.now());
     existingBatch.setCreateBy(medicineBatch.getCreateBy());
     existingBatch.setUpdateBy(medicineBatch.getUpdateBy());
     existingBatch.setDeleteAt(medicineBatch.getDeleteAt());
@@ -63,8 +63,8 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
       BigDecimal minPrice,
       BigDecimal maxPrice,
       Boolean isExpired,
-      Date startDate,
-      Date endDate,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
       Boolean isActive,
       Integer minQuantity,
       Pageable pageable) {

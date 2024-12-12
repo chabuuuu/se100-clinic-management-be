@@ -9,6 +9,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,8 +21,8 @@ public class MedicineBatchSpecification {
       BigDecimal minPrice,
       BigDecimal maxPrice,
       Boolean isExpired,
-      Date startDate,
-      Date endDate,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
       Boolean isActive,
       Integer minQuantity) {
     return (Root<MedicineBatch> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {

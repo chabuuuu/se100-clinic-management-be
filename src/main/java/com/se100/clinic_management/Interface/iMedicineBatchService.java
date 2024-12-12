@@ -4,7 +4,7 @@ import com.se100.clinic_management.model.MedicineBatch;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 
@@ -22,8 +22,8 @@ public interface iMedicineBatchService {
       BigDecimal minPrice,
       BigDecimal maxPrice,
       Boolean isExpired,
-      Date startDate,
-      Date endDate,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
       Boolean isActive,
       Integer minQuantity,
       Pageable pageable);
