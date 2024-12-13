@@ -4,12 +4,13 @@ services:
 
   backend-clinic-management:
     container_name: backend-clinic-management
+    build:
+      context: .
+      dockerfile: Dockerfile  # Tên Dockerfile trong thư mục hiện tại
     image: haphuthinh/backend-clinic-management:latest
     restart: unless-stopped
-    env_file:
-      - .env
     ports:
-      - "7068:8080"
+      - "8080:8080"
     deploy:
       resources:
         limits:

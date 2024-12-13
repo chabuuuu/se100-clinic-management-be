@@ -18,6 +18,8 @@ public interface iEmployeeService {
 
     Employee updateEmployee(int id, Employee employeeDetails);
 
+    Employee getEmployeeById(int id);
+
     Page<Employee> getEmployees(String role, String name, LocalDate createdAfter, LocalDate createdBefore,
             String search, Pageable pageable);
 }

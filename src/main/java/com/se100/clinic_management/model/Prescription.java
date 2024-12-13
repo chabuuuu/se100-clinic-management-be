@@ -3,10 +3,13 @@ package com.se100.clinic_management.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import lombok.EqualsAndHashCode;
+
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "prescriptions")
-public class Prescription extends BaseEntity{
+public class Prescription extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

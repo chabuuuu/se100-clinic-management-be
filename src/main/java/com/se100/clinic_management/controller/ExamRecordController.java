@@ -2,12 +2,11 @@ package com.se100.clinic_management.controller;
 
 import com.se100.clinic_management.Interface.iExamRecordService;
 import com.se100.clinic_management.dto.base_format.ResponseVO;
-import com.se100.clinic_management.dto.employee.EmployeeLoginReq;
-import com.se100.clinic_management.dto.employee.EmployeeLoginRes;
 import com.se100.clinic_management.dto.exam_record.ExamRecordCreateReq;
-import com.se100.clinic_management.dto.exam_record.ExamRecordCreateRes;
 import com.se100.clinic_management.utils.ResponseEntityGenerator;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/exam-records")
 @RequiredArgsConstructor
 public class ExamRecordController {
+
+    @Autowired
     private final iExamRecordService examRecordService;
 
     @PostMapping("/create")

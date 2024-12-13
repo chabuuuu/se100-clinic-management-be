@@ -43,4 +43,9 @@ public class EmployeeSpecification {
           criteriaBuilder.like(root.get("email"), searchPattern));
     };
   }
+
+  // Lọc nhân viên chưa bị xóa
+  public static Specification<Employee> notDeleted() {
+    return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("deleteAt"));
+  }
 }

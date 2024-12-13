@@ -5,10 +5,13 @@ import lombok.Data;
 
 import java.util.Date;
 
+import lombok.EqualsAndHashCode;
+
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "exam_records")
-public class ExamRecord extends BaseEntity{
+public class ExamRecord extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

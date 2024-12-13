@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.se100.clinic_management.model.Employee;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -35,6 +36,7 @@ import org.springframework.data.domain.Pageable;
 @RequiredArgsConstructor
 public class EmployeeController {
 
+  @Autowired
   private final iEmployeeService employeeService;
 
   @SneakyThrows
@@ -82,9 +84,18 @@ public class EmployeeController {
     return ResponseEntity.ok("Employee updated successfully with ID: " + updatedEmployee.getId());
   }
 
-  // url example:
+  @GetMapping("get/{id}")
+  public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) {
+    Employee employee = employeeService.getEmployeeById(id);
+    return ResponseEntity.ok(employee);
+  }
+
+  // (Filter + Sort) and Pagination
   // api/employees?role=DOCTOR&createdAfter=2024-01-01&createdBefore=2024-11-30&page=0&size=5&sort=id,asc
-  // Lọc nhân viên theo nhiều tham số (tên, vai trò, ngày tạo)
+
+  // Search
+  // api/employees?search=nguyen
+
   @GetMapping
   public Page<Employee> getEmployees(
       @RequestParam(required = false) String fullname,
