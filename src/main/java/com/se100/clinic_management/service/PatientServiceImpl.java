@@ -31,7 +31,11 @@ public class PatientServiceImpl implements iPatientService {
   public void deletePatient(int id) {
     // Kiểm tra xem bệnh nhân có tồn tại không trước khi xóa (tuỳ chọn)
     if (patientRepository.existsById(id)) {
-      patientRepository.deleteById(id);
+      Patient patient = patientRepository.findById(id).orElse(null);
+      if (patient != null) {
+        patient.setDeleteAt(java.time.LocalDateTime.now());
+        patientRepository.save(patient);
+      }
     }
   }
 
