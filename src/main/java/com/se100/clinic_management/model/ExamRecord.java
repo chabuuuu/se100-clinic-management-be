@@ -40,11 +40,25 @@ public class ExamRecord extends BaseEntity {
     @Column(name = "doctor_id")
     private int doctorId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "service_record_id")
+    private Integer serviceRecordId;
+
+    @Column(name = "service_type_id")
+    private Integer serviceTypeId;
+
+    @ManyToOne()
     @JoinColumn(name = "patient_id", insertable = false, updatable = false)
     private Patient patient;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "doctor_id", insertable = false, updatable = false)
     private Employee doctor;
+
+    @ManyToOne()
+    @JoinColumn(name = "service_record_id", insertable = false, updatable = false)
+    private ServiceRecord serviceRecord;
+
+    @ManyToOne()
+    @JoinColumn(name = "service_type_id", insertable = false, updatable = false)
+    private ServiceType serviceType;
 }

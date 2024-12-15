@@ -3,6 +3,7 @@ package com.se100.clinic_management.controller;
 import com.se100.clinic_management.Interface.iExamRecordService;
 import com.se100.clinic_management.dto.base_format.ResponseVO;
 import com.se100.clinic_management.dto.exam_record.ExamRecordCreateReq;
+import com.se100.clinic_management.dto.exam_record.ExamRecordUpdateReq;
 import com.se100.clinic_management.utils.ResponseEntityGenerator;
 import lombok.RequiredArgsConstructor;
 
@@ -34,5 +35,11 @@ public class ExamRecordController {
     public ResponseEntity<ResponseVO> getDetail(@PathVariable int examRecordId) {
         var result = examRecordService.getExamRecordDetail(examRecordId);
         return ResponseEntityGenerator.okFormat(result);
+    }
+
+    @PutMapping("/update/{examRecordId}")
+    public ResponseEntity<ResponseVO> update(@RequestBody ExamRecordUpdateReq examRecordUpdateReq, @PathVariable int examRecordId) {
+        examRecordService.updateExamRecord(examRecordUpdateReq, examRecordId);
+        return ResponseEntityGenerator.okFormat("Update successfully");
     }
 }

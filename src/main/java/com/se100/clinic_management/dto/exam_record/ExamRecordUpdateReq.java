@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExamRecordCreateReq {
+public class ExamRecordUpdateReq {
     private Date examDate;
 
     private Integer numericalOrder;
@@ -23,4 +23,11 @@ public class ExamRecordCreateReq {
     private int doctorId;
 
     private int serviceTypeId;
+
+    private String symptom;
+
+    private String diagnose;
+
+    private String status;
+
 }
