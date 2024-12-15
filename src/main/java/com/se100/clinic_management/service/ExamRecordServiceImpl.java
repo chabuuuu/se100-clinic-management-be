@@ -1,15 +1,28 @@
 package com.se100.clinic_management.service;
 
 import com.se100.clinic_management.Interface.iExamRecordService;
+import com.se100.clinic_management.dto.JwtTokenVo;
 import com.se100.clinic_management.dto.exam_record.ExamRecordCreateReq;
 import com.se100.clinic_management.dto.exam_record.ExamRecordCreateRes;
 import com.se100.clinic_management.dto.exam_record.ExamRecordDetailRes;
+import com.se100.clinic_management.dto.exam_record.ExamRecordUpdateReq;
 import com.se100.clinic_management.model.ExamRecord;
+import com.se100.clinic_management.model.MedicineBatch;
+import com.se100.clinic_management.model.ServiceRecord;
 import com.se100.clinic_management.repository.ExamRecordRepository;
+import com.se100.clinic_management.repository.ServiceRecordRepository;
+import com.se100.clinic_management.specification.ExamRecordSpecification;
+import com.se100.clinic_management.specification.MedicineBatchSpecification;
+import com.se100.clinic_management.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +32,19 @@ public class ExamRecordServiceImpl implements iExamRecordService {
     private final ExamRecordRepository examRecordRepository;
 
     @Autowired
+    private final ServiceRecordRepository serviceRecordRepository;
+
+    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public ExamRecordCreateRes createExamRecord(ExamRecordCreateReq createExamRecordReq) {
+        //Get currently logged receptionist
+        JwtTokenVo jwtTokenVo = SecurityUtil.getSession();
+
+        int receptionistId = jwtTokenVo.getUserId();
+
+
         ExamRecord examRecord = new ExamRecord();
 
         examRecord.setExamRoom(createExamRecordReq.getExamRoom());
@@ -30,6 +52,24 @@ public class ExamRecordServiceImpl implements iExamRecordService {
         examRecord.setDoctorId(createExamRecordReq.getDoctorId());
         examRecord.setPatientId(createExamRecordReq.getPatientId());
         examRecord.setNumericalOrder(createExamRecordReq.getNumericalOrder());
+        examRecord.setServiceTypeId(createExamRecordReq.getServiceTypeId());
+
+        //Create new service_record
+        ServiceRecord serviceRecord = new ServiceRecord();
+        serviceRecord.setPatientId(createExamRecordReq.getPatientId());
+        serviceRecord.setReceptionistId(receptionistId);
+
+        //Save service record
+        ServiceRecord savedServiceRecord = serviceRecordRepository.save(serviceRecord);
+
+        //Set service record id to exam record
+        examRecord.setServiceRecordId(savedServiceRecord.getId());
+
+        //Set status
+        examRecord.setStatus("WAITING_FOR_EXAM");
+
+        //Set create by
+        examRecord.setCreatedBy(receptionistId);
 
         ExamRecord createdExamRecord = examRecordRepository.save(examRecord);
 
@@ -51,6 +91,9 @@ public class ExamRecordServiceImpl implements iExamRecordService {
         examRecordCreateRes.setUpdateAt(createdExamRecord.getUpdateAt());
         examRecordCreateRes.setCreatedBy(createdExamRecord.getCreatedBy());
         examRecordCreateRes.setUpdatedBy(createdExamRecord.getUpdatedBy());
+        examRecordCreateRes.setServiceRecordId(createdExamRecord.getServiceRecordId());
+        examRecordCreateRes.setServiceTypeId(createdExamRecord.getServiceTypeId());
+
 
         return examRecordCreateRes;
     }
@@ -69,27 +112,47 @@ public class ExamRecordServiceImpl implements iExamRecordService {
     }
 
     @Override
-    public ExamRecordDetailRes getExamRecordDetail(int examRecordId) {
+    public ExamRecord getExamRecordDetail(int examRecordId) {
         ExamRecord examRecord = examRecordRepository.findById(examRecordId).orElse(null);
         if (examRecord == null) {
             return null;
         }
 
-        ExamRecordDetailRes examRecordDetailRes = new ExamRecordDetailRes();
-        examRecordDetailRes.setId(examRecord.getId());
-        examRecordDetailRes.setExamDate(examRecord.getExamDate());
-        examRecordDetailRes.setNumericalOrder(examRecord.getNumericalOrder());
-        examRecordDetailRes.setExamRoom(examRecord.getExamRoom());
-        examRecordDetailRes.setDiagnose(examRecord.getDiagnose());
-        examRecordDetailRes.setSymptom(examRecord.getSymptom());
-        examRecordDetailRes.setStatus(examRecord.getStatus());
-        examRecordDetailRes.setDoctorId(examRecord.getDoctorId());
-        examRecordDetailRes.setPatientId(examRecord.getPatientId());
-        examRecordDetailRes.setCreateAt(examRecord.getCreateAt());
-        examRecordDetailRes.setUpdateAt(examRecord.getUpdateAt());
-        examRecordDetailRes.setCreatedBy(examRecord.getCreatedBy());
-        examRecordDetailRes.setUpdatedBy(examRecord.getUpdatedBy());
+        //Delete sensitive information
+        examRecord.getDoctor().setPassword(null);
 
-        return examRecordDetailRes;
+        return examRecord;
+    }
+
+    @Override
+    public void updateExamRecord(ExamRecordUpdateReq examRecord, int examRecordId) {
+        ExamRecord existingExamRecord = examRecordRepository.findById(examRecordId).orElse(null);
+        if (existingExamRecord == null) {
+            throw new RuntimeException("Exam record not found");
+        }
+
+        //Get currently logged receptionist
+        JwtTokenVo jwtTokenVo = SecurityUtil.getSession();
+
+        int loggedInUserId = jwtTokenVo.getUserId();
+
+        existingExamRecord.setExamRoom(examRecord.getExamRoom());
+        existingExamRecord.setExamDate(examRecord.getExamDate());
+        existingExamRecord.setDoctorId(examRecord.getDoctorId());
+        existingExamRecord.setPatientId(examRecord.getPatientId());
+        existingExamRecord.setNumericalOrder(examRecord.getNumericalOrder());
+        existingExamRecord.setServiceTypeId(examRecord.getServiceTypeId());
+        existingExamRecord.setDiagnose(examRecord.getDiagnose());
+        existingExamRecord.setSymptom(examRecord.getSymptom());
+        existingExamRecord.setStatus(examRecord.getStatus());
+        existingExamRecord.setUpdatedBy(loggedInUserId);
+
+        examRecordRepository.save(existingExamRecord);
+    }
+
+    @Override
+    public Page<ExamRecord> getExamRecords(Integer examRecordId, String patientName, String examRoom, Date fromDate, Date toDate, String doctorName, String status, Pageable pageable) {
+        Specification<ExamRecord> spec = ExamRecordSpecification.filter(examRecordId, patientName, examRoom, doctorName, status, fromDate, toDate);
+        return examRecordRepository.findAll(spec, pageable);
     }
 }

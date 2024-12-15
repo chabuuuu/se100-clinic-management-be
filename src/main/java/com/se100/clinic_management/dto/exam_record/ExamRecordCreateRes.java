@@ -30,4 +30,8 @@ public class ExamRecordCreateRes extends BaseRes {
     private Integer patientId;
 
     private Integer doctorId;
+
+    private Integer serviceTypeId;
+
+    private Integer serviceRecordId;
 }
