@@ -74,10 +74,9 @@ public class SecurityUtil {
         return builder
                 .withIssuedAt(new Date())
                 .withIssuer(ISSUER)
-                .withExpiresAt(new Date(System.currentTimeMillis() + SEVEN_DAYS)) //7 ngày
+                .withExpiresAt(new Date(System.currentTimeMillis() + SEVEN_DAYS)) // 7 ngày
                 .sign(ALGORITHM);
     }
-
 
     public static void setJwtToClient(JwtTokenVo vo) {
         var accessToken = createToken(vo);
@@ -104,7 +103,6 @@ public class SecurityUtil {
         return verifier.verify(token);
     }
 
-
     @SneakyThrows
     public static JwtTokenVo getValueObject(DecodedJWT decodedJWT) {
         Map<String, Claim> claim = decodedJWT.getClaims();
@@ -115,23 +113,20 @@ public class SecurityUtil {
         try {
             return OBJECT_MAPPER.readValue(userClaim, JwtTokenVo.class);
         } catch (JsonProcessingException e) {
-            //log error
+            // log error
             System.out.println("Error: " + e.getMessage());
-
 
             throw new RuntimeException(e);
         }
     }
 
-
-
     public static String getToken(HttpServletRequest req) throws AccessDeniedException {
         var token = req.getHeader(AUTHORIZATION_HEADER);
-        //Check if token is null
+        // Check if token is null
         if (token == null) {
             throw new AccessDeniedException("Not authorized.");
         }
-        //Check if token is not start with Bearer
+        // Check if token is not start with Bearer
         if (!token.startsWith(AUTHORIZATION_PREFIX)) {
             throw new AccessDeniedException("Not authorized.");
         }
@@ -140,8 +135,7 @@ public class SecurityUtil {
         return jwtToken;
     }
 
-
-    public static JwtTokenVo getSession(){
+    public static JwtTokenVo getSession() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
             throw new AccessDeniedException("Not authorized.");
@@ -149,4 +143,3 @@ public class SecurityUtil {
         return (JwtTokenVo) authentication.getPrincipal();
     }
 }
-
