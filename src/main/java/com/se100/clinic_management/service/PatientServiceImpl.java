@@ -4,6 +4,9 @@ import com.se100.clinic_management.Interface.iPatientService;
 import com.se100.clinic_management.model.Patient;
 import com.se100.clinic_management.repository.PatientRepository;
 import com.se100.clinic_management.specification.PatientSpecification;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,18 +45,56 @@ public class PatientServiceImpl implements iPatientService {
   // Cập nhật thông tin bệnh nhân
   @Override
   public Patient updatePatient(int id, Patient patientDetails) {
+    // Kiểm tra xem bệnh nhân có tồn tại không
     if (patientRepository.existsById(id)) {
       // Tìm bệnh nhân và cập nhật các trường
-      Patient existingPatient = patientRepository.findById(id).orElseThrow();
-      existingPatient.setFullname(patientDetails.getFullname());
-      existingPatient.setGender(patientDetails.isGender());
-      existingPatient.setBirthday(patientDetails.getBirthday());
-      existingPatient.setPhoneNumber(patientDetails.getPhoneNumber());
-      existingPatient.setUpdateAt(java.time.LocalDateTime.now());
-      existingPatient.setUpdateBy(patientDetails.getUpdateBy());
+      Patient existingPatient = patientRepository.findById(id)
+          .orElseThrow(() -> new EntityNotFoundException("Patient not found"));
+
+      // Cập nhật fullname nếu có giá trị mới
+      if (patientDetails.getFullname() != null) {
+        existingPatient.setFullname(patientDetails.getFullname());
+      }
+
+      // Cập nhật gender nếu có giá trị mới
+      if (patientDetails.isGender() != existingPatient.isGender()) {
+        existingPatient.setGender(patientDetails.isGender());
+      }
+
+      // Cập nhật birthday nếu có giá trị mới
+      if (patientDetails.getBirthday() != null) {
+        existingPatient.setBirthday(patientDetails.getBirthday());
+      }
+
+      // Cập nhật phoneNumber nếu có giá trị mới
+      if (patientDetails.getPhoneNumber() != null) {
+        existingPatient.setPhoneNumber(patientDetails.getPhoneNumber());
+      }
+
+      // Cập nhật weight nếu có giá trị mới (kiểm tra không null)
+      if (patientDetails.getWeight() != null) {
+        existingPatient.setWeight(patientDetails.getWeight());
+      }
+
+      // Cập nhật bloodGroup nếu có giá trị mới
+      if (patientDetails.getBloodGroup() != null) {
+        existingPatient.setBloodGroup(patientDetails.getBloodGroup());
+      }
+
+      // Cập nhật medicalHistory nếu có giá trị mới
+      if (patientDetails.getMedicalHistory() != null) {
+        existingPatient.setMedicalHistory(patientDetails.getMedicalHistory());
+      }
+
+      // Cập nhật updateAt và updateBy luôn luôn vì đó là thông tin cần thiết khi cập
+      // nhật
+      existingPatient.setUpdateAt(java.time.LocalDateTime.now()); // Cập nhật thời gian hiện tại
+      existingPatient.setUpdateBy(patientDetails.getUpdateBy()); // Cập nhật người thực hiện
+
+      // Lưu và trả về đối tượng bệnh nhân đã cập nhật
       return patientRepository.save(existingPatient);
     } else {
-      throw new RuntimeException("Patient not found");
+      throw new EntityNotFoundException("Patient not found");
     }
   }
 

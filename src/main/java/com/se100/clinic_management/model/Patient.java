@@ -35,6 +35,15 @@ public class Patient {
   @Column(name = "phone_number", nullable = false, length = 15)
   private String phoneNumber;
 
+  @Column(name = "weight", nullable = true)
+  private Double weight;
+
+  @Column(name = "blood_group", nullable = false, length = 10)
+  private String bloodGroup;
+
+  @Column(name = "medical_history", nullable = false)
+  private String medicalHistory;
+
   @Column(name = "create_at")
   @Temporal(TemporalType.TIMESTAMP)
   private LocalDateTime createAt;
