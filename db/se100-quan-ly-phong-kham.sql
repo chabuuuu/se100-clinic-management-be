@@ -1,29 +1,43 @@
 CREATE TABLE `patients` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `fullname` varchar(100) NOT NULL,
-  `gender` boolean NOT NULL,
+  `gender` tinyint(1) NOT NULL,
   `birthday` date NOT NULL,
   `phone_number` varchar(15) NOT NULL,
-  `create_at` datetime,
-  `update_at` datetime,
-  `create_by` varchar(70),
-  `update_by` varchar(70),
-  `delete_at` datetime
-);
+  `create_at` datetime DEFAULT NULL,
+  `update_at` datetime DEFAULT NULL,
+  `create_by` varchar(70) DEFAULT NULL,
+  `update_by` varchar(70) DEFAULT NULL,
+  `delete_at` datetime DEFAULT NULL,
+  `weight` decimal(10,0) DEFAULT NULL,
+  `blood_group` varchar(10) DEFAULT NULL,
+  `medical_history` text COMMENT 'Tiền sử bệnh',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `employees` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `fullname` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `role` varchar(100),
-  `create_at` datetime,
-  `update_at` datetime,
-  `create_by` varchar(70),
-  `update_by` varchar(70),
-  `delete_at` datetime
-);
+  `role` varchar(100) DEFAULT NULL,
+  `create_at` datetime DEFAULT NULL,
+  `update_at` datetime DEFAULT NULL,
+  `create_by` varchar(70) DEFAULT NULL,
+  `update_by` varchar(70) DEFAULT NULL,
+  `delete_at` datetime DEFAULT NULL,
+  `shift` varchar(50) DEFAULT NULL,
+  `dob` date DEFAULT NULL COMMENT 'Date of birth',
+  `phone_number` varchar(15) DEFAULT NULL,
+  `department` varchar(100) DEFAULT NULL,
+  `gender` int NOT NULL DEFAULT '0',
+  `avatar` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  CONSTRAINT `employees_chk_1` CHECK ((`role` in (_utf8mb4'RECEPTIONIST',_utf8mb4'DOCTOR',_utf8mb4'PHARMACIST',_utf8mb4'TECHNICIAN')))
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- Add check constraint for role column
 ALTER TABLE `employees` ADD CHECK (`role` IN ('RECEPTIONIST', 'DOCTOR', 'PHARMACIST', 'TECHNICIAN'));

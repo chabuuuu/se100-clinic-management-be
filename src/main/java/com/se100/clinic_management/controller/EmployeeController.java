@@ -1,5 +1,10 @@
 package com.se100.clinic_management.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 
 import com.se100.clinic_management.Interface.iEmployeeService;
@@ -8,6 +13,7 @@ import com.se100.clinic_management.dto.employee.RefreshTokenRes;
 import com.se100.clinic_management.dto.base_format.ResponseVO;
 import com.se100.clinic_management.dto.employee.EmployeeLoginReq;
 import com.se100.clinic_management.dto.employee.EmployeeLoginRes;
+import com.se100.clinic_management.dto.employee.EmployeeProfileDTO;
 import com.se100.clinic_management.exception.BaseError;
 import com.se100.clinic_management.utils.ResponseEntityGenerator;
 import com.se100.clinic_management.utils.SecurityUtil;
@@ -21,13 +27,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.se100.clinic_management.model.Employee;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -71,11 +80,10 @@ public class EmployeeController {
         .body("Employee created successfully with ID: " + createdEmployee.getId());
   }
 
-  @DeleteMapping("delete/{id}")
-  public ResponseEntity<String> deleteEmployee(@PathVariable int id) {
+  @DeleteMapping("/delete/{id}")
+  public ResponseEntity<ResponseVO> deleteEmployee(@PathVariable int id) {
     employeeService.deleteEmployee(id);
-    return ResponseEntity.status(HttpStatus.NO_CONTENT)
-        .body("Employee deleted successfully with ID: " + id);
+    return ResponseEntityGenerator.deleteFormat("Employee deleted successfully with ID: " + id);
   }
 
   @PutMapping("update/{id}")
@@ -84,18 +92,81 @@ public class EmployeeController {
     return ResponseEntity.ok("Employee updated successfully with ID: " + updatedEmployee.getId());
   }
 
+  // Lấy toàn bộ thông tin của employee
   @GetMapping("get/{id}")
   public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) {
     Employee employee = employeeService.getEmployeeById(id);
     return ResponseEntity.ok(employee);
   }
 
-  // (Filter + Sort) and Pagination
-  // api/employees?role=DOCTOR&createdAfter=2024-01-01&createdBefore=2024-11-30&page=0&size=5&sort=id,asc
+  // Đường dẫn thư mục lưu trữ tệp tải lên
+  @Value("${file.upload-dir}")
+  private String uploadDir;
 
-  // Search
-  // api/employees?search=nguyen
+  // Tải lên avatar cho employee
+  @PostMapping("/upload-avatar")
+  public ResponseEntity<String> uploadAvatar(@RequestParam("file") MultipartFile file) {
 
+    var jwtTokenVo = SecurityUtil.getSession();
+
+    int id = jwtTokenVo.getUserId();
+
+    Employee employee = employeeService.getEmployeeById(id);
+
+    if (employee == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    if (file.isEmpty()) {
+      return ResponseEntity.badRequest().body("No file selected");
+    }
+
+    try {
+      // Lưu tệp vào thư mục
+      String filename = id + "_" + file.getOriginalFilename();
+      Path path = Paths.get(uploadDir + filename);
+      Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+      // Cập nhật avatar cho employee
+      employee.setAvatar(filename);
+      employeeService.updateEmployee(id, employee); // Lưu employee với avatar mới
+
+      return ResponseEntity.ok("Avatar uploaded successfully");
+    } catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading file");
+    }
+  }
+
+  // Lấy thông tin profile của employee
+  @GetMapping("/profile")
+  public ResponseEntity<EmployeeProfileDTO> getProfile() {
+
+    var jwtTokenVo = SecurityUtil.getSession();
+
+    int id = jwtTokenVo.getUserId();
+
+    Employee employee = employeeService.getEmployeeById(id);
+
+    if (employee == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    EmployeeProfileDTO profile = new EmployeeProfileDTO(
+        employee.getId(),
+        employee.getUsername(),
+        employee.getFullname(),
+        employee.getEmail(),
+        employee.getRole(),
+        employee.getShift(),
+        employee.getDob(),
+        employee.getPhoneNumber(),
+        employee.getDepartment(),
+        employee.isGender(),
+        employee.getAvatar());
+    return ResponseEntity.ok(profile);
+  }
+
+  // Lấy danh sách employee với phân trang, tìm kiếm và lọc
   @GetMapping
   public Page<Employee> getEmployees(
       @RequestParam(required = false) String fullname,

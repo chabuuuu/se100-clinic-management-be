@@ -2,7 +2,6 @@ package com.se100.clinic_management.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,6 +51,9 @@ public class Employee {
 
   @Column(name = "gender")
   private boolean gender;
+
+  @Column(name = "avatar")
+  private String avatar;
 
   @Column(name = "create_at")
   @Temporal(TemporalType.TIMESTAMP)

@@ -13,6 +13,8 @@ public interface iPatientService {
 
   Patient updatePatient(int id, Patient patient);
 
+  Patient getPatient(int id);
+
   Page<Patient> getPatients(String fullname, Boolean gender, String phoneNumber, LocalDate createdAfter,
       LocalDate createdBefore, Integer minAge, Integer maxAge, String search, Pageable pageable);
 }
