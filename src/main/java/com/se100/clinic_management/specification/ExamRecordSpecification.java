@@ -24,7 +24,8 @@ public class ExamRecordSpecification {
                     doctorName == null ? builder.conjunction() : builder.like(root.get("doctor").get("fullname"), "%" + doctorName + "%"),
                     status == null ? builder.conjunction() : builder.equal(root.get("status"), status),
                     fromDate == null ? builder.conjunction() : builder.greaterThanOrEqualTo(root.get("createAt"), fromDate),
-                    toDate == null ? builder.conjunction() : builder.lessThanOrEqualTo(root.get("createAt"), toDate)
+                    toDate == null ? builder.conjunction() : builder.lessThanOrEqualTo(root.get("createAt"), toDate),
+                    builder.equal(root.get("deleteAt"), null)
             );
         };
     }
