@@ -23,11 +23,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class EmployeeServiceImpl implements iEmployeeService {
 
     @Autowired
-    private final EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
 
     @SneakyThrows
     @Override
