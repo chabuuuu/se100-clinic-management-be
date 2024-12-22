@@ -44,6 +44,6 @@ public class Prescription extends BaseEntity {
     @JoinColumn(name = "service_type_id", insertable = false, updatable = false)
     private ServiceType serviceType;
 
-    @OneToMany(mappedBy = "prescription", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "prescription", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PrescriptionDetail> prescriptionDetails;
 }
