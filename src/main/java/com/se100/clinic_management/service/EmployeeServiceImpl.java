@@ -81,6 +81,12 @@ public class EmployeeServiceImpl implements iEmployeeService {
             existingEmployee.setFullname(employeeDetails.getFullname());
             existingEmployee.setEmail(employeeDetails.getEmail());
             existingEmployee.setRole(employeeDetails.getRole());
+            existingEmployee.setShift(employeeDetails.getShift());
+            existingEmployee.setDob(employeeDetails.getDob());
+            existingEmployee.setPhoneNumber(employeeDetails.getPhoneNumber());
+            existingEmployee.setDepartment(employeeDetails.getDepartment());
+            existingEmployee.setGender(employeeDetails.isGender());
+            existingEmployee.setAvatar(employeeDetails.getAvatar());
             existingEmployee.setUpdateAt(java.time.LocalDateTime.now());
             existingEmployee.setUpdateBy(employeeDetails.getUpdateBy());
             return employeeRepository.save(existingEmployee);

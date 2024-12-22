@@ -57,6 +57,12 @@ public class PatientServiceImpl implements iPatientService {
     }
   }
 
+  // Lấy thông tin bệnh nhân theo id
+  @Override
+  public Patient getPatient(int id) {
+    return patientRepository.findById(id).orElse(null);
+  }
+
   // Lấy danh sách bệnh nhân với phân trang, tìm kiếm và lọc
   @Override
   public Page<Patient> getPatients(String fullname, Boolean gender, String phoneNumber,

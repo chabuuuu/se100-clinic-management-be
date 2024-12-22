@@ -1,7 +1,10 @@
 package com.se100.clinic_management.controller;
 
 import com.se100.clinic_management.Interface.iPatientService;
+import com.se100.clinic_management.dto.base_format.ResponseVO;
 import com.se100.clinic_management.model.Patient;
+import com.se100.clinic_management.utils.ResponseEntityGenerator;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +29,15 @@ public class PatientController {
     return new ResponseEntity<>(patientService.savePatient(patient), HttpStatus.CREATED);
   }
 
+  @GetMapping("/{id}")
+  public ResponseEntity<Patient> getPatient(@PathVariable int id) {
+    return ResponseEntity.ok(patientService.getPatient(id));
+  }
+
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<String> deletePatient(@PathVariable int id) {
+  public ResponseEntity<ResponseVO> deletePatient(@PathVariable int id) {
     patientService.deletePatient(id);
-    return ResponseEntity.status(HttpStatus.NO_CONTENT)
-        .body("Employee deleted successfully with ID: " + id);
+    return ResponseEntityGenerator.deleteFormat("Patient deleted successfully with ID: " + id);
   }
 
   @PutMapping("/update/{id}")
@@ -39,11 +46,6 @@ public class PatientController {
     return ResponseEntity.ok("Employee updated successfully with ID: " + updatedPatient.getId());
   }
 
-  // url example:
-  // GET
-  // /api/patients?fullname=Pham%20Hoang%20Quan&gender=true&phoneNumber=0123456789&createdAfter=2024-01-01&createdBefore=2024-12-31&minAge=25&maxAge=40&page=0&size=10&sort=fullname,asc
-  // Lọc bệnh nhân theo nhiều tham số (tên, giới tính, số điện thoại, ngày tạo, độ
-  // tuổi)
   @GetMapping
   public Page<Patient> getPatients(
       @RequestParam(required = false) String fullname,
