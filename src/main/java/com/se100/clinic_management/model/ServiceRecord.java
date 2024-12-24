@@ -29,4 +29,13 @@ public class ServiceRecord extends BaseEntity{
     @ManyToOne()
     @JoinColumn(name = "receptionist_id", insertable = false, updatable = false)
     private Employee receptionist;
+
+    @OneToMany(mappedBy = "serviceRecord", fetch = FetchType.LAZY)
+    private List<TestRecord> testRecords;
+
+    @OneToMany(mappedBy = "serviceRecord", fetch = FetchType.LAZY)
+    private List<Prescription> prescriptions;
+
+    @OneToMany(mappedBy = "serviceRecord", fetch = FetchType.LAZY)
+    private List<ExamRecord> examRecords;
 }

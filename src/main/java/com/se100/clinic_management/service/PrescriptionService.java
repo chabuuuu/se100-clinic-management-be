@@ -45,6 +45,58 @@ public class PrescriptionService implements iPrescriptionService {
     @Autowired
     private PrescriptionDetailRepository prescriptionDetailRepository;
 
+    @Override
+    public PrescriptionDetailDto convertPrescriptionToDto(Prescription prescription){
+        if (prescription == null){
+            return null;
+        }
+
+        PrescriptionDetailDto prescriptionDetailDto = new PrescriptionDetailDto();
+        prescriptionDetailDto.setId(prescription.getId());
+        prescriptionDetailDto.setStatus(prescription.getStatus());
+        prescriptionDetailDto.setServiceRecordId(prescription.getServiceRecordId());
+        prescriptionDetailDto.setServiceType(prescription.getServiceType());
+
+        PrescriptionDetailDto.PharmacistDto pharmacistDto = new PrescriptionDetailDto.PharmacistDto();
+
+        ModelMapper modelMapper = new ModelMapper();
+
+        modelMapper.map(prescription.getPharmacist(), pharmacistDto);
+
+        prescriptionDetailDto.setPharmacist(pharmacistDto);
+
+        if (prescription.getExamRecord() != null){
+            prescriptionDetailDto.setExamRecordId(prescription.getExamRecord().getId());
+        }
+
+        List<PrescriptionDetailDto.MedicineDetailDto> medicineDetailDtos = new ArrayList<>();
+
+        for (PrescriptionDetail prescriptionDetail : prescription.getPrescriptionDetails()){
+            PrescriptionDetailDto.MedicineDetailDto detailDto = new PrescriptionDetailDto.MedicineDetailDto();
+            detailDto.setMedicine(prescriptionDetail.getMedicine());
+            detailDto.setDosage(prescriptionDetail.getDosage());
+            detailDto.setAmount(prescriptionDetail.getAmount());
+            detailDto.setNotes(prescriptionDetail.getNotes());
+
+            medicineDetailDtos.add(detailDto);
+        }
+
+        prescriptionDetailDto.setPrescriptionDetails(medicineDetailDtos);
+
+        //Set patient
+        PrescriptionDetailDto.PatientDto patientDto = new PrescriptionDetailDto.PatientDto();
+        modelMapper.map(prescription.getServiceRecord().getPatient(), patientDto);
+        prescriptionDetailDto.setPatient(patientDto);
+
+        //Base entity
+        prescriptionDetailDto.setCreateAt(prescription.getCreateAt());
+        prescriptionDetailDto.setUpdateAt(prescription.getUpdateAt());
+        prescriptionDetailDto.setCreatedBy(prescription.getCreatedBy());
+        prescriptionDetailDto.setUpdatedBy(prescription.getUpdatedBy());
+
+        return prescriptionDetailDto;
+    }
+
     @SneakyThrows
     @Override
     public Prescription createPrescription(CreatePrescriptionReq createPrescriptionReq) {
@@ -160,52 +212,7 @@ public class PrescriptionService implements iPrescriptionService {
     public PrescriptionDetailDto getPrescriptionById(int id) {
         Prescription prescription = prescriptionRepository.findById(id).orElse(null);
 
-        if (prescription == null){
-            return null;
-        }
-
-        PrescriptionDetailDto prescriptionDetailDto = new PrescriptionDetailDto();
-        prescriptionDetailDto.setId(prescription.getId());
-        prescriptionDetailDto.setStatus(prescription.getStatus());
-        prescriptionDetailDto.setServiceRecordId(prescription.getServiceRecordId());
-        prescriptionDetailDto.setServiceType(prescription.getServiceType());
-
-        PrescriptionDetailDto.PharmacistDto pharmacistDto = new PrescriptionDetailDto.PharmacistDto();
-
-        ModelMapper modelMapper = new ModelMapper();
-
-        modelMapper.map(prescription.getPharmacist(), pharmacistDto);
-
-        prescriptionDetailDto.setPharmacist(pharmacistDto);
-
-        if (prescription.getExamRecord() != null){
-            prescriptionDetailDto.setExamRecordId(prescription.getExamRecord().getId());
-        }
-
-        List<PrescriptionDetailDto.MedicineDetailDto> medicineDetailDtos = new ArrayList<>();
-
-        for (PrescriptionDetail prescriptionDetail : prescription.getPrescriptionDetails()){
-            PrescriptionDetailDto.MedicineDetailDto detailDto = new PrescriptionDetailDto.MedicineDetailDto();
-            detailDto.setMedicine(prescriptionDetail.getMedicine());
-            detailDto.setDosage(prescriptionDetail.getDosage());
-            detailDto.setAmount(prescriptionDetail.getAmount());
-            detailDto.setNotes(prescriptionDetail.getNotes());
-
-            medicineDetailDtos.add(detailDto);
-        }
-
-        prescriptionDetailDto.setPrescriptionDetails(medicineDetailDtos);
-
-        //Set patient
-        PrescriptionDetailDto.PatientDto patientDto = new PrescriptionDetailDto.PatientDto();
-        modelMapper.map(prescription.getServiceRecord().getPatient(), patientDto);
-        prescriptionDetailDto.setPatient(patientDto);
-
-        //Base entity
-        prescriptionDetailDto.setCreateAt(prescription.getCreateAt());
-        prescriptionDetailDto.setUpdateAt(prescription.getUpdateAt());
-        prescriptionDetailDto.setCreatedBy(prescription.getCreatedBy());
-        prescriptionDetailDto.setUpdatedBy(prescription.getUpdatedBy());
+        PrescriptionDetailDto prescriptionDetailDto = convertPrescriptionToDto(prescription);
 
         return prescriptionDetailDto;
     }

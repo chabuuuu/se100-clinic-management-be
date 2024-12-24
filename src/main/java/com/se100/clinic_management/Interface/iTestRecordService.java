@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface iTestRecordService {
+    public TestRecordDto convertToDto(TestRecord testRecord);
     TestRecordDto createTestRecord(TestRecord testRecordDto);
     void updateTestRecord(int id, TestRecord testRecordDto);
     void deleteTestRecord(int id);
