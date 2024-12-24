@@ -6,6 +6,7 @@ import com.se100.clinic_management.dto.exam_record.ExamRecordCreateReq;
 import com.se100.clinic_management.dto.exam_record.ExamRecordCreateRes;
 import com.se100.clinic_management.dto.exam_record.ExamRecordDetailRes;
 import com.se100.clinic_management.dto.exam_record.ExamRecordUpdateReq;
+import com.se100.clinic_management.exception.BaseError;
 import com.se100.clinic_management.model.ExamRecord;
 import com.se100.clinic_management.model.MedicineBatch;
 import com.se100.clinic_management.model.ServiceRecord;
@@ -15,13 +16,16 @@ import com.se100.clinic_management.specification.ExamRecordSpecification;
 import com.se100.clinic_management.specification.MedicineBatchSpecification;
 import com.se100.clinic_management.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -154,5 +158,20 @@ public class ExamRecordServiceImpl implements iExamRecordService {
     public Page<ExamRecord> getExamRecords(Integer examRecordId, String patientName, String examRoom, Date fromDate, Date toDate, String doctorName, String status, Pageable pageable) {
         Specification<ExamRecord> spec = ExamRecordSpecification.filter(examRecordId, patientName, examRoom, doctorName, status, fromDate, toDate);
         return examRecordRepository.findAll(spec, pageable);
+    }
+
+    @SneakyThrows
+    @Override
+    public void deleteExamRecord(int examRecordId) {
+        //Set delete at to current time
+        ExamRecord existingExamRecord = examRecordRepository.findById(examRecordId).orElse(null);
+        if (existingExamRecord == null) {
+            throw new BaseError("EXAM_RECORD_NOT_FOUND", "Exam record not found", HttpStatus.NOT_FOUND);
+        }
+
+        LocalDateTime deleteAt = LocalDateTime.now();
+        existingExamRecord.setDeleteAt(deleteAt);
+
+        examRecordRepository.save(existingExamRecord);
     }
 }

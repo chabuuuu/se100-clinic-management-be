@@ -63,4 +63,10 @@ public class ExamRecordController {
         Page<ExamRecord> examRecords = examRecordService.getExamRecords(examRecordId, patientName, examRoom, fromDate, toDate, doctorName, status, pageable);
         return ResponseEntity.ok(examRecords);
     }
+
+    @DeleteMapping("/{examRecordId}")
+    public ResponseEntity<ResponseVO> deleteExamRecord(@PathVariable int examRecordId) {
+        examRecordService.deleteExamRecord(examRecordId);
+        return ResponseEntityGenerator.okFormat("Delete successfully");
+    }
 }

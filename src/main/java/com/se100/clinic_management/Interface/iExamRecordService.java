@@ -17,4 +17,6 @@ public interface iExamRecordService {
     void updateExamRecord(ExamRecordUpdateReq examRecord, int examRecordId);
 
     Page<ExamRecord> getExamRecords(Integer examRecordId, String patientName, String examRoom, Date fromDate, Date toDate, String doctorName, String status, Pageable pageable);
+
+    void deleteExamRecord(int examRecordId);
 }
