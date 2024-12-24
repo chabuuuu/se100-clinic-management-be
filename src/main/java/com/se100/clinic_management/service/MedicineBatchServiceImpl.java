@@ -96,7 +96,7 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
       LocalDateTime endDate,
       Boolean isActive,
       Pageable pageable) {
-    Specification<MedicineBatch> spec = MedicineBatchSpecification.filter(medicineId, isExpired, endDate, endDate,
+    Specification<MedicineBatch> spec = MedicineBatchSpecification.filter(medicineId, isExpired, startDate, endDate,
         isActive);
     return medicineBatchRepository.findAll(spec, pageable);
   }
