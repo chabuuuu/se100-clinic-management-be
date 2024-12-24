@@ -18,27 +18,16 @@ public class MedicineBatchSpecification {
 
   public static Specification<MedicineBatch> filter(
       Integer medicineId,
-      BigDecimal minPrice,
-      BigDecimal maxPrice,
       Boolean isExpired,
       LocalDateTime startDate,
       LocalDateTime endDate,
-      Boolean isActive,
-      Integer minQuantity) {
+      Boolean isActive) {
     return (Root<MedicineBatch> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
       // Lọc theo medicineId
       if (medicineId != null) {
         predicates.add(builder.equal(root.get("medicine").get("id"), medicineId));
-      }
-
-      // Lọc theo giá
-      if (minPrice != null) {
-        predicates.add(builder.greaterThanOrEqualTo(root.get("price"), minPrice));
-      }
-      if (maxPrice != null) {
-        predicates.add(builder.lessThanOrEqualTo(root.get("price"), maxPrice));
       }
 
       // Lọc theo ngày hết hạn
@@ -65,11 +54,6 @@ public class MedicineBatchSpecification {
         } else {
           predicates.add(builder.isNotNull(root.get("deleteAt")));
         }
-      }
-
-      // Lọc theo số lượng tồn kho
-      if (minQuantity != null) {
-        predicates.add(builder.greaterThanOrEqualTo(root.get("quantity"), minQuantity));
       }
 
       return builder.and(predicates.toArray(new Predicate[0]));

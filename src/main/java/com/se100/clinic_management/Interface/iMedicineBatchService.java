@@ -19,12 +19,9 @@ public interface iMedicineBatchService {
   void deleteMedicineBatch(int id);
 
   Page<MedicineBatch> getMedicineBatches(Integer medicineId,
-      BigDecimal minPrice,
-      BigDecimal maxPrice,
       Boolean isExpired,
       LocalDateTime startDate,
       LocalDateTime endDate,
       Boolean isActive,
-      Integer minQuantity,
       Pageable pageable);
 }
