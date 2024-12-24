@@ -40,14 +40,6 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
     // Cập nhật amount nếu có giá trị mới
     existingBatch.setAmount(medicineBatch.getAmount());
 
-    // Cập nhật price nếu có giá trị mới
-    if (medicineBatch.getPrice() != null) {
-      existingBatch.setPrice(medicineBatch.getPrice());
-    }
-
-    // Cập nhật quantity nếu có giá trị mới
-    existingBatch.setQuantity(medicineBatch.getQuantity());
-
     // Cập nhật expireDate nếu có giá trị mới
     if (medicineBatch.getExpireDate() != null) {
       existingBatch.setExpireDate(medicineBatch.getExpireDate());
@@ -99,16 +91,13 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
   // filter and pagination
   @Override
   public Page<MedicineBatch> getMedicineBatches(Integer medicineId,
-      BigDecimal minPrice,
-      BigDecimal maxPrice,
       Boolean isExpired,
       LocalDateTime startDate,
       LocalDateTime endDate,
       Boolean isActive,
-      Integer minQuantity,
       Pageable pageable) {
-    Specification<MedicineBatch> spec = MedicineBatchSpecification.filter(medicineId, minPrice,
-        maxPrice, isExpired, endDate, endDate, isActive, minQuantity);
+    Specification<MedicineBatch> spec = MedicineBatchSpecification.filter(medicineId, isExpired, endDate, endDate,
+        isActive);
     return medicineBatchRepository.findAll(spec, pageable);
   }
 }
