@@ -73,22 +73,73 @@ public class EmployeeServiceImpl implements iEmployeeService {
     // Cập nhật thông tin nhân viên
     @Override
     public Employee updateEmployee(int id, Employee employeeDetails) {
+        // Kiểm tra xem nhân viên có tồn tại không
         if (employeeRepository.existsById(id)) {
             // Tìm nhân viên và cập nhật các trường
-            Employee existingEmployee = employeeRepository.findById(id).orElseThrow();
-            existingEmployee.setUsername(employeeDetails.getUsername());
-            existingEmployee.setPassword(employeeDetails.getPassword());
-            existingEmployee.setFullname(employeeDetails.getFullname());
-            existingEmployee.setEmail(employeeDetails.getEmail());
-            existingEmployee.setRole(employeeDetails.getRole());
-            existingEmployee.setShift(employeeDetails.getShift());
-            existingEmployee.setDob(employeeDetails.getDob());
-            existingEmployee.setPhoneNumber(employeeDetails.getPhoneNumber());
-            existingEmployee.setDepartment(employeeDetails.getDepartment());
-            existingEmployee.setGender(employeeDetails.isGender());
-            existingEmployee.setAvatar(employeeDetails.getAvatar());
-            existingEmployee.setUpdateAt(java.time.LocalDateTime.now());
-            existingEmployee.setUpdateBy(employeeDetails.getUpdateBy());
+            Employee existingEmployee = employeeRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+            // Cập nhật username nếu có giá trị mới
+            if (employeeDetails.getUsername() != null) {
+                existingEmployee.setUsername(employeeDetails.getUsername());
+            }
+
+            // Cập nhật password nếu có giá trị mới
+            if (employeeDetails.getPassword() != null) {
+                existingEmployee.setPassword(employeeDetails.getPassword());
+            }
+
+            // Cập nhật fullname nếu có giá trị mới
+            if (employeeDetails.getFullname() != null) {
+                existingEmployee.setFullname(employeeDetails.getFullname());
+            }
+
+            // Cập nhật email nếu có giá trị mới
+            if (employeeDetails.getEmail() != null) {
+                existingEmployee.setEmail(employeeDetails.getEmail());
+            }
+
+            // Cập nhật role nếu có giá trị mới
+            if (employeeDetails.getRole() != null) {
+                existingEmployee.setRole(employeeDetails.getRole());
+            }
+
+            // Cập nhật shift nếu có giá trị mới
+            if (employeeDetails.getShift() != null) {
+                existingEmployee.setShift(employeeDetails.getShift());
+            }
+
+            // Cập nhật dob nếu có giá trị mới
+            if (employeeDetails.getDob() != null) {
+                existingEmployee.setDob(employeeDetails.getDob());
+            }
+
+            // Cập nhật phoneNumber nếu có giá trị mới
+            if (employeeDetails.getPhoneNumber() != null) {
+                existingEmployee.setPhoneNumber(employeeDetails.getPhoneNumber());
+            }
+
+            // Cập nhật department nếu có giá trị mới
+            if (employeeDetails.getDepartment() != null) {
+                existingEmployee.setDepartment(employeeDetails.getDepartment());
+            }
+
+            // Cập nhật gender nếu có giá trị mới
+            if (employeeDetails.isGender() != existingEmployee.isGender()) {
+                existingEmployee.setGender(employeeDetails.isGender());
+            }
+
+            // Cập nhật avatar nếu có giá trị mới
+            if (employeeDetails.getAvatar() != null) {
+                existingEmployee.setAvatar(employeeDetails.getAvatar());
+            }
+
+            // Cập nhật updateAt và updateBy luôn luôn vì đó là thông tin cần thiết khi cập
+            // nhật
+            existingEmployee.setUpdateAt(java.time.LocalDateTime.now()); // Cập nhật thời gian hiện tại
+            existingEmployee.setUpdateBy(employeeDetails.getUpdateBy()); // Cập nhật người thực hiện
+
+            // Lưu và trả về đối tượng nhân viên đã cập nhật
             return employeeRepository.save(existingEmployee);
         } else {
             throw new RuntimeException("Employee not found");

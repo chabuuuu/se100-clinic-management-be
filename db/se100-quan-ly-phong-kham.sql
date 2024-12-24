@@ -122,8 +122,6 @@ CREATE TABLE `medicines` (
 CREATE TABLE `medicine_batches` (
   `id` int NOT NULL AUTO_INCREMENT,
   `amount` int DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
-  `quantity` int DEFAULT NULL,
   `expire_date` date DEFAULT NULL,
   `medicine_id` int NOT NULL,
   `manufacturer` varchar(60) DEFAULT NULL,

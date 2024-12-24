@@ -39,11 +39,30 @@ public class ServiceRatingServiceImpl implements iServiceRatingService {
   @Override
   public ServiceRating updateRating(int id, ServiceRating rating) {
     ServiceRating existingRating = getRatingById(id);
+
+    // Cập nhật score nếu có giá trị mới
     existingRating.setScore(rating.getScore());
-    existingRating.setFeedback(rating.getFeedback());
-    existingRating.setCreateAt(rating.getCreateAt());
-    existingRating.setUpdateAt(LocalDateTime.now());
-    existingRating.setDeleteAt(rating.getDeleteAt());
+
+    // Cập nhật feedback nếu có giá trị mới
+    if (rating.getFeedback() != null) {
+      existingRating.setFeedback(rating.getFeedback());
+    }
+
+    // Cập nhật createAt nếu có giá trị mới (nếu cần, nếu không muốn thay đổi thì bỏ
+    // qua)
+    if (rating.getCreateAt() != null) {
+      existingRating.setCreateAt(rating.getCreateAt());
+    }
+
+    // Cập nhật updateAt luôn luôn vì đó là thông tin cần thiết khi cập nhật
+    existingRating.setUpdateAt(LocalDateTime.now()); // Cập nhật thời gian hiện tại
+
+    // Cập nhật deleteAt nếu có giá trị mới
+    if (rating.getDeleteAt() != null) {
+      existingRating.setDeleteAt(rating.getDeleteAt());
+    }
+
+    // Lưu và trả về đối tượng ServiceRating đã cập nhật
     return serviceRatingRepository.save(existingRating);
   }
 
