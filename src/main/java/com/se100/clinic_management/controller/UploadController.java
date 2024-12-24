@@ -15,21 +15,15 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @RestController
 @RequestMapping("api/files")
 public class UploadController {
-
-  private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 
   private final Path fileStorageLocation = Paths.get("uploads").toAbsolutePath().normalize();
 
   public UploadController() throws IOException {
     // Tạo thư mục lưu trữ nếu chưa tồn tại
     Files.createDirectories(fileStorageLocation);
-    logger.info("File storage location initialized: {}", fileStorageLocation.toString());
   }
 
   // 1. API để upload file
@@ -59,12 +53,10 @@ public class UploadController {
   public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
     try {
       Path filePath = fileStorageLocation.resolve(fileName).normalize();
-      logger.debug("Resolved file path: {}", filePath.toString());
 
       Resource resource = new UrlResource(filePath.toUri());
 
       if (!resource.exists()) {
-        logger.error("File not found: {}", fileName);
         return ResponseEntity.notFound().build();
       }
 
