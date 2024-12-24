@@ -57,6 +57,6 @@ public class MedicineBatchController {
       @RequestParam(required = false) LocalDateTime endDate,
       @RequestParam(required = false) Boolean isActive,
       Pageable pageable) {
-    return medicineBatchService.getMedicineBatches(medicineId, isExpired, endDate, endDate, isActive, pageable);
+    return medicineBatchService.getMedicineBatches(medicineId, isExpired, startDate, endDate, isActive, pageable);
   }
 }
