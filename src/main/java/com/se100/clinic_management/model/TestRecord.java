@@ -54,4 +54,8 @@ public class TestRecord extends BaseEntity {
     @ManyToOne()
     @JoinColumn(name = "service_type_id", insertable = false, updatable = false)
     private ServiceType serviceType;
+
+    @ManyToOne()
+    @JoinColumn(name = "service_record_id", insertable = false, updatable = false)
+    private ServiceRecord serviceRecord;
 }

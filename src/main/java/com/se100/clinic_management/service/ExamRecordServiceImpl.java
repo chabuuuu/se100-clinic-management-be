@@ -2,6 +2,8 @@ package com.se100.clinic_management.service;
 
 import com.se100.clinic_management.Interface.iExamRecordService;
 import com.se100.clinic_management.dto.JwtTokenVo;
+import com.se100.clinic_management.dto.PatientDto;
+import com.se100.clinic_management.dto.employee.EmployeeProfileDTO;
 import com.se100.clinic_management.dto.exam_record.ExamRecordCreateReq;
 import com.se100.clinic_management.dto.exam_record.ExamRecordCreateRes;
 import com.se100.clinic_management.dto.exam_record.ExamRecordDetailRes;
@@ -17,6 +19,7 @@ import com.se100.clinic_management.specification.MedicineBatchSpecification;
 import com.se100.clinic_management.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +43,35 @@ public class ExamRecordServiceImpl implements iExamRecordService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Override
+    public ExamRecordDetailRes convertToExamRecordDetailRes(ExamRecord examRecord) {
+        ModelMapper modelMapper = new ModelMapper();
+        ExamRecordDetailRes examRecordDetailRes = new ExamRecordDetailRes();
+        examRecordDetailRes.setId(examRecord.getId());
+        examRecordDetailRes.setExamDate(examRecord.getExamDate());
+        examRecordDetailRes.setNumericalOrder(examRecord.getNumericalOrder());
+        examRecordDetailRes.setExamRoom(examRecord.getExamRoom());
+        examRecordDetailRes.setDiagnose(examRecord.getDiagnose());
+        examRecordDetailRes.setSymptom(examRecord.getSymptom());
+        examRecordDetailRes.setStatus(examRecord.getStatus());
+        examRecordDetailRes.setPatientId(examRecord.getPatientId());
+        examRecordDetailRes.setDoctorId(examRecord.getDoctorId());
+        examRecordDetailRes.setCreateAt(examRecord.getCreateAt());
+        examRecordDetailRes.setUpdateAt(examRecord.getUpdateAt());
+        examRecordDetailRes.setCreatedBy(examRecord.getCreatedBy());
+        examRecordDetailRes.setUpdatedBy(examRecord.getUpdatedBy());
+        examRecordDetailRes.setServiceRecordId(examRecord.getServiceRecordId());
+        examRecordDetailRes.setServiceTypeId(examRecord.getServiceTypeId());
+        if (examRecord.getDoctor() != null) {
+            examRecordDetailRes.setDoctor(modelMapper.map(examRecord.getDoctor(), EmployeeProfileDTO.class));
+        }
+        if (examRecord.getPatient() != null) {
+            examRecordDetailRes.setPatient(modelMapper.map(examRecord.getPatient(), PatientDto.class));
+        }
+        examRecordDetailRes.setServiceType(examRecord.getServiceType());
+        return examRecordDetailRes;
+    }
 
     @Override
     public ExamRecordCreateRes createExamRecord(ExamRecordCreateReq createExamRecordReq) {
@@ -116,7 +148,7 @@ public class ExamRecordServiceImpl implements iExamRecordService {
     }
 
     @Override
-    public ExamRecord getExamRecordDetail(int examRecordId) {
+    public ExamRecordDetailRes getExamRecordDetail(int examRecordId) {
         ExamRecord examRecord = examRecordRepository.findById(examRecordId).orElse(null);
         if (examRecord == null) {
             return null;
@@ -125,7 +157,7 @@ public class ExamRecordServiceImpl implements iExamRecordService {
         //Delete sensitive information
         examRecord.getDoctor().setPassword(null);
 
-        return examRecord;
+        return convertToExamRecordDetailRes(examRecord);
     }
 
     @Override
@@ -155,9 +187,11 @@ public class ExamRecordServiceImpl implements iExamRecordService {
     }
 
     @Override
-    public Page<ExamRecord> getExamRecords(Integer examRecordId, String patientName, String examRoom, Date fromDate, Date toDate, String doctorName, String status, Pageable pageable) {
+    public Page<ExamRecordDetailRes> getExamRecords(Integer examRecordId, String patientName, String examRoom, Date fromDate, Date toDate, String doctorName, String status, Pageable pageable) {
         Specification<ExamRecord> spec = ExamRecordSpecification.filter(examRecordId, patientName, examRoom, doctorName, status, fromDate, toDate);
-        return examRecordRepository.findAll(spec, pageable);
+        Page<ExamRecord> examRecords = examRecordRepository.findAll(spec, pageable);
+
+        return examRecords.map(this::convertToExamRecordDetailRes);
     }
 
     @SneakyThrows

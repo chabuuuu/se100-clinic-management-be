@@ -5,5 +5,6 @@ import com.se100.clinic_management.model.Prescription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface PrescriptionRepository extends JpaRepository<Prescription, Integer>, JpaSpecificationExecutor<Prescription> {
+public interface PrescriptionRepository
+    extends JpaRepository<Prescription, Integer>, JpaSpecificationExecutor<Prescription> {
 }

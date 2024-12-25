@@ -26,7 +26,8 @@ public class TestRecordServiceImpl implements iTestRecordService {
     @Autowired
     private TestRecordRepository testRecordRepository;
 
-    private TestRecordDto convertToDto(TestRecord testRecord) {
+    @Override
+    public TestRecordDto convertToDto(TestRecord testRecord) {
         ModelMapper modelMapper = new ModelMapper();
         TestRecordDto testRecordDto = new TestRecordDto();
         testRecordDto.setId(testRecord.getId());
