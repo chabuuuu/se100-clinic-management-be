@@ -43,12 +43,33 @@ public class MedicineServiceImpl implements iMedicineService {
   @Override
   public Medicine updateMedicine(int id, Medicine medicine) {
     Medicine existingMedicine = getMedicineById(id);
-    existingMedicine.setName(medicine.getName());
-    existingMedicine.setIngredient(medicine.getIngredient());
-    existingMedicine.setDosageForm(medicine.getDosageForm());
-    existingMedicine.setPrice(medicine.getPrice());
-    existingMedicine.setUpdateAt(LocalDateTime.now());
-    existingMedicine.setUpdateBy(medicine.getUpdateBy());
+
+    // Cập nhật name nếu có giá trị mới
+    if (medicine.getName() != null) {
+      existingMedicine.setName(medicine.getName());
+    }
+
+    // Cập nhật ingredient nếu có giá trị mới
+    if (medicine.getIngredient() != null) {
+      existingMedicine.setIngredient(medicine.getIngredient());
+    }
+
+    // Cập nhật dosageForm nếu có giá trị mới
+    if (medicine.getDosageForm() != null) {
+      existingMedicine.setDosageForm(medicine.getDosageForm());
+    }
+
+    // Cập nhật price nếu có giá trị mới
+    if (medicine.getPrice() != null) {
+      existingMedicine.setPrice(medicine.getPrice());
+    }
+
+    // Cập nhật updateAt và updateBy luôn luôn vì đó là thông tin cần thiết khi cập
+    // nhật
+    existingMedicine.setUpdateAt(LocalDateTime.now()); // Cập nhật thời gian hiện tại
+    existingMedicine.setUpdateBy(medicine.getUpdateBy()); // Cập nhật người thực hiện
+
+    // Lưu và trả về đối tượng thuốc đã cập nhật
     return medicineRepository.save(existingMedicine);
   }
 

@@ -28,12 +28,6 @@ public class MedicineBatch {
   @Column(name = "amount")
   private int amount;
 
-  @Column(name = "price", precision = 10, scale = 2)
-  private BigDecimal price;
-
-  @Column(name = "quantity")
-  private int quantity;
-
   @Column(name = "expire_date")
   private LocalDate expireDate;
 

@@ -27,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,44 +105,44 @@ public class PrescriptionService implements iPrescriptionService {
         prescription.setServiceRecordId(createPrescriptionReq.getServiceRecordId());
         prescription.setServiceTypeId(createPrescriptionReq.getServiceTypeId());
 
-        //Set pharmacist
+        // Set pharmacist
         Employee pharmacist = employeeRepository.findById(createPrescriptionReq.getPharmacistId()).orElse(null);
 
-        if (pharmacist == null){
+        if (pharmacist == null) {
             throw new BaseError("PHARMACIST_NOT_FOUND", "Pharmacist not found", HttpStatus.NOT_FOUND);
         }
         prescription.setPharmacist(pharmacist);
 
-        //Set exam record
-        if (createPrescriptionReq.getExamRecordId() != null){
+        // Set exam record
+        if (createPrescriptionReq.getExamRecordId() != null) {
             ExamRecord examRecord = examRecordRepository.findById(createPrescriptionReq.getExamRecordId()).orElse(null);
 
-            if (examRecord == null){
+            if (examRecord == null) {
                 throw new BaseError("EXAM_RECORD_NOT_FOUND", "Exam record not found", HttpStatus.NOT_FOUND);
             }
             prescription.setExamRecord(examRecord);
         }
 
-        //Set status
+        // Set status
         prescription.setStatus(PrescriptionStatus.PENDING);
 
-        //Set createdBy
+        // Set createdBy
         prescription.setCreatedBy(pharmacist.getId());
-
 
         Prescription savedPrescription = prescriptionRepository.save(prescription);
 
-        //Set prescription detail
+        // Set prescription detail
         List<PrescriptionDetail> prescriptionDetails = new ArrayList<>();
-        for (CreatePrescriptionReq.PrescriptionDetailDto prescriptionDetailDto : createPrescriptionReq.getPrescriptionDetails()){
-           PrescriptionDetail prescriptionDetail = new PrescriptionDetail();
-           prescriptionDetail.setMedicineId(prescriptionDetailDto.getMedicineId());
-           prescriptionDetail.setPrescriptionId(savedPrescription.getId());
-           prescriptionDetail.setDosage(prescriptionDetailDto.getDosage());
-           prescriptionDetail.setAmount(prescriptionDetailDto.getAmount());
-           prescriptionDetail.setNotes(prescriptionDetail.getNotes());
+        for (CreatePrescriptionReq.PrescriptionDetailDto prescriptionDetailDto : createPrescriptionReq
+                .getPrescriptionDetails()) {
+            PrescriptionDetail prescriptionDetail = new PrescriptionDetail();
+            prescriptionDetail.setMedicineId(prescriptionDetailDto.getMedicineId());
+            prescriptionDetail.setPrescriptionId(savedPrescription.getId());
+            prescriptionDetail.setDosage(prescriptionDetailDto.getDosage());
+            prescriptionDetail.setAmount(prescriptionDetailDto.getAmount());
+            prescriptionDetail.setNotes(prescriptionDetail.getNotes());
 
-           prescriptionDetails.add(prescriptionDetail);
+            prescriptionDetails.add(prescriptionDetail);
         }
 
         savedPrescription.setPrescriptionDetails(prescriptionDetails);
@@ -154,54 +155,55 @@ public class PrescriptionService implements iPrescriptionService {
     public void updatePrescription(int id, UpdatePrescriptionReq updatePrescriptionReq) {
         Prescription prescription = prescriptionRepository.findById(id).orElse(null);
 
-        if (prescription == null){
+        if (prescription == null) {
             throw new BaseError("PRESCRIPTION_NOT_FOUND", "Prescription not found", HttpStatus.NOT_FOUND);
         }
 
         prescription.setServiceRecordId(updatePrescriptionReq.getServiceRecordId());
         prescription.setServiceTypeId(updatePrescriptionReq.getServiceTypeId());
 
-        //Set pharmacist
+        // Set pharmacist
         Employee pharmacist = employeeRepository.findById(updatePrescriptionReq.getPharmacistId()).orElse(null);
 
-        if (pharmacist == null){
+        if (pharmacist == null) {
             throw new BaseError("PHARMACIST_NOT_FOUND", "Pharmacist not found", HttpStatus.NOT_FOUND);
         }
         prescription.setPharmacist(pharmacist);
 
-        //Set exam record
-        if (updatePrescriptionReq.getExamRecordId() != null){
+        // Set exam record
+        if (updatePrescriptionReq.getExamRecordId() != null) {
             ExamRecord examRecord = examRecordRepository.findById(updatePrescriptionReq.getExamRecordId()).orElse(null);
 
-            if (examRecord == null){
+            if (examRecord == null) {
                 throw new BaseError("EXAM_RECORD_NOT_FOUND", "Exam record not found", HttpStatus.NOT_FOUND);
             }
             prescription.setExamRecord(examRecord);
         }
 
-        //Set prescription detail
+        // Set prescription detail
         List<PrescriptionDetail> prescriptionDetails = new ArrayList<>();
-        for (UpdatePrescriptionReq.PrescriptionDetailDto prescriptionDetailDto : updatePrescriptionReq.getPrescriptionDetails()){
+        for (UpdatePrescriptionReq.PrescriptionDetailDto prescriptionDetailDto : updatePrescriptionReq
+                .getPrescriptionDetails()) {
             PrescriptionDetail prescriptionDetail = new PrescriptionDetail();
             prescriptionDetail.setMedicineId(prescriptionDetailDto.getMedicineId());
             prescriptionDetail.setPrescriptionId(prescription.getId());
             prescriptionDetail.setDosage(prescriptionDetailDto.getDosage());
             prescriptionDetail.setAmount(prescriptionDetailDto.getAmount());
-            prescriptionDetail.setNotes(prescriptionDetail.getNotes());
+            prescriptionDetail.setNotes(prescriptionDetailDto.getNotes());
 
             prescriptionDetails.add(prescriptionDetail);
         }
 
-        //Set status
+        // Set status
         prescription.setStatus(updatePrescriptionReq.getStatus());
 
-        //Set updatedBy
+        // Set updatedBy
         JwtTokenVo jwtTokenVo = SecurityUtil.getSession();
 
         prescription.setUpdatedBy(jwtTokenVo.getUserId());
 
-        //Delete old prescription details
-//        prescriptionDetailRepository.deleteAll(prescription.getPrescriptionDetails());
+        // Delete old prescription details
+        prescriptionDetailRepository.deleteAllByPrescriptionId(prescription.getId());
 
         prescription.setPrescriptionDetails(prescriptionDetails);
 
@@ -211,19 +213,21 @@ public class PrescriptionService implements iPrescriptionService {
     @Override
     public PrescriptionDetailDto getPrescriptionById(int id) {
         Prescription prescription = prescriptionRepository.findById(id).orElse(null);
-
+        
         PrescriptionDetailDto prescriptionDetailDto = convertPrescriptionToDto(prescription);
 
         return prescriptionDetailDto;
     }
 
     @Override
-    public Page<PrescriptionDto> getPrescriptions(Integer prescriptionId, String patientName, String pharmacistName, String status, String fromDate, String toDate, Pageable pageable) {
-        Specification<Prescription> specification = PrescriptionSpecification.filter(prescriptionId, patientName, pharmacistName, status, fromDate, toDate);
+    public Page<PrescriptionDto> getPrescriptions(Integer prescriptionId, String patientName, String pharmacistName,
+            String status, String fromDate, String toDate, Pageable pageable) {
+        Specification<Prescription> specification = PrescriptionSpecification.filter(prescriptionId, patientName,
+                pharmacistName, status, fromDate, toDate);
 
         Page<Prescription> prescriptionPage = prescriptionRepository.findAll(specification, pageable);
 
-        //Quick convert from Page<Prescription> to Page<PrescriptionDto>
+        // Quick convert from Page<Prescription> to Page<PrescriptionDto>
         Page<PrescriptionDto> prescriptionDtoPage = prescriptionPage.map(prescription -> {
             PrescriptionDto prescriptionDto = new PrescriptionDto();
             prescriptionDto.setId(prescription.getId());
@@ -239,11 +243,11 @@ public class PrescriptionService implements iPrescriptionService {
 
             prescriptionDto.setPharmacist(pharmacistDto);
 
-            if (prescription.getExamRecord() != null){
+            if (prescription.getExamRecord() != null) {
                 prescriptionDto.setExamRecordId(prescription.getExamRecord().getId());
             }
 
-            //Set patient
+            // Set patient
             PrescriptionDetailDto.PatientDto patientDto = new PrescriptionDetailDto.PatientDto();
             modelMapper.map(prescription.getServiceRecord().getPatient(), patientDto);
             prescriptionDto.setPatient(patientDto);
@@ -256,9 +260,9 @@ public class PrescriptionService implements iPrescriptionService {
 
     @Override
     public void deletePrescription(int id) {
-        //SET deleteAt = current time
+        // SET deleteAt = current time
         Prescription prescription = prescriptionRepository.findById(id).orElse(null);
-        if (prescription != null){
+        if (prescription != null) {
             prescription.setDeleteAt(java.time.LocalDateTime.now());
             prescriptionRepository.save(prescription);
         }

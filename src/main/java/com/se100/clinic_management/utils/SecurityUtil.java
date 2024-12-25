@@ -39,7 +39,8 @@ public class SecurityUtil {
     private static final String USER_CLAIM = "user";
     private static final String ISSUER = "auth0";
 
-    private static String SECRET_KEY = System.getenv("LOGIN_JWT_KEY");
+    // private static String SECRET_KEY = System.getenv("LOGIN_JWT_KEY");
+    private static final String SECRET_KEY = "clinic_management";
 
     private static final Algorithm ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
 

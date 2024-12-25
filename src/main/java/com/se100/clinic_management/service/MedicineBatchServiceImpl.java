@@ -36,17 +36,48 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
   @Override
   public MedicineBatch updateMedicineBatch(int id, MedicineBatch medicineBatch) {
     MedicineBatch existingBatch = getMedicineBatchById(id);
+
+    // Cập nhật amount nếu có giá trị mới
     existingBatch.setAmount(medicineBatch.getAmount());
-    existingBatch.setPrice(medicineBatch.getPrice());
-    existingBatch.setQuantity(medicineBatch.getQuantity());
-    existingBatch.setExpireDate(medicineBatch.getExpireDate());
-    existingBatch.setMedicineId(medicineBatch.getMedicineId());
-    existingBatch.setManufacturer(medicineBatch.getManufacturer());
-    existingBatch.setCreateAt(medicineBatch.getCreateAt());
-    existingBatch.setUpdateAt(LocalDateTime.now());
-    existingBatch.setCreateBy(medicineBatch.getCreateBy());
+
+    // Cập nhật expireDate nếu có giá trị mới
+    if (medicineBatch.getExpireDate() != null) {
+      existingBatch.setExpireDate(medicineBatch.getExpireDate());
+    }
+
+    // Cập nhật medicineId nếu có giá trị mới
+    if (medicineBatch.getMedicineId() != null) {
+      existingBatch.setMedicineId(medicineBatch.getMedicineId());
+    }
+
+    // Cập nhật manufacturer nếu có giá trị mới
+    if (medicineBatch.getManufacturer() != null) {
+      existingBatch.setManufacturer(medicineBatch.getManufacturer());
+    }
+
+    // Cập nhật createAt nếu có giá trị mới (nếu cần, nếu không muốn thay đổi thì bỏ
+    // qua)
+    if (medicineBatch.getCreateAt() != null) {
+      existingBatch.setCreateAt(medicineBatch.getCreateAt());
+    }
+
+    // Cập nhật updateAt luôn luôn vì đó là thông tin cần thiết khi cập nhật
+    existingBatch.setUpdateAt(LocalDateTime.now()); // Cập nhật thời gian hiện tại
+
+    // Cập nhật createBy nếu có giá trị mới
+    if (medicineBatch.getCreateBy() != null) {
+      existingBatch.setCreateBy(medicineBatch.getCreateBy());
+    }
+
+    // Cập nhật updateBy luôn luôn vì đó là thông tin cần thiết khi cập nhật
     existingBatch.setUpdateBy(medicineBatch.getUpdateBy());
-    existingBatch.setDeleteAt(medicineBatch.getDeleteAt());
+
+    // Cập nhật deleteAt nếu có giá trị mới
+    if (medicineBatch.getDeleteAt() != null) {
+      existingBatch.setDeleteAt(medicineBatch.getDeleteAt());
+    }
+
+    // Lưu và trả về đối tượng MedicineBatch đã cập nhật
     return medicineBatchRepository.save(existingBatch);
   }
 
@@ -60,16 +91,13 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
   // filter and pagination
   @Override
   public Page<MedicineBatch> getMedicineBatches(Integer medicineId,
-      BigDecimal minPrice,
-      BigDecimal maxPrice,
       Boolean isExpired,
       LocalDateTime startDate,
       LocalDateTime endDate,
       Boolean isActive,
-      Integer minQuantity,
       Pageable pageable) {
-    Specification<MedicineBatch> spec = MedicineBatchSpecification.filter(medicineId, minPrice,
-        maxPrice, isExpired, endDate, endDate, isActive, minQuantity);
+    Specification<MedicineBatch> spec = MedicineBatchSpecification.filter(medicineId, isExpired, startDate, endDate,
+        isActive);
     return medicineBatchRepository.findAll(spec, pageable);
   }
 }

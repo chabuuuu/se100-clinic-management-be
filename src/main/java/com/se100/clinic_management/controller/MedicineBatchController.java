@@ -52,15 +52,11 @@ public class MedicineBatchController {
   @GetMapping
   public Page<MedicineBatch> getMedicineBatches(
       @RequestParam(required = false) Integer medicineId,
-      @RequestParam(required = false) BigDecimal minPrice,
-      @RequestParam(required = false) BigDecimal maxPrice,
       @RequestParam(required = false) Boolean isExpired,
       @RequestParam(required = false) LocalDateTime startDate,
       @RequestParam(required = false) LocalDateTime endDate,
       @RequestParam(required = false) Boolean isActive,
-      @RequestParam(required = false) Integer minQuantity,
       Pageable pageable) {
-    return medicineBatchService.getMedicineBatches(medicineId, minPrice,
-        maxPrice, isExpired, endDate, endDate, isActive, minQuantity, pageable);
+    return medicineBatchService.getMedicineBatches(medicineId, isExpired, startDate, endDate, isActive, pageable);
   }
 }
