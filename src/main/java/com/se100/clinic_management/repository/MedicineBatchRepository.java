@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MedicineBatchRepository
-    extends JpaRepository<MedicineBatch, Integer>, JpaSpecificationExecutor<MedicineBatch> {
+        extends JpaRepository<MedicineBatch, Integer>, JpaSpecificationExecutor<MedicineBatch> {
+
 }
