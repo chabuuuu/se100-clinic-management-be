@@ -1,6 +1,5 @@
 package com.se100.clinic_management.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

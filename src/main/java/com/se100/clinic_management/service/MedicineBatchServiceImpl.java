@@ -7,7 +7,6 @@ import com.se100.clinic_management.Interface.iMedicineBatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -24,7 +23,14 @@ public class MedicineBatchServiceImpl implements iMedicineBatchService {
   @Override
   public MedicineBatch getMedicineBatchById(int id) {
     Optional<MedicineBatch> optionalBatch = medicineBatchRepository.findById(id);
-    return optionalBatch.orElseThrow(() -> new RuntimeException("Medicine batch not found"));
+
+    MedicineBatch batch = optionalBatch.orElseThrow(() -> new RuntimeException("Medicine batch not found"));
+
+    if (batch.getDeleteAt() != null) {
+      throw new RuntimeException("Medicine batch has been deleted");
+    }
+
+    return batch;
   }
 
   @Override
