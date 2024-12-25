@@ -11,12 +11,13 @@ import org.springframework.data.domain.Pageable;
 import java.util.Date;
 
 public interface iExamRecordService {
+    ExamRecordDetailRes convertToExamRecordDetailRes(ExamRecord examRecord);
     ExamRecordCreateRes createExamRecord(ExamRecordCreateReq createExamRecordReq);
     int getExamRecordId();
-    ExamRecord getExamRecordDetail(int examRecordId);
+    ExamRecordDetailRes getExamRecordDetail(int examRecordId);
     void updateExamRecord(ExamRecordUpdateReq examRecord, int examRecordId);
 
-    Page<ExamRecord> getExamRecords(Integer examRecordId, String patientName, String examRoom, Date fromDate, Date toDate, String doctorName, String status, Pageable pageable);
+    Page<ExamRecordDetailRes> getExamRecords(Integer examRecordId, String patientName, String examRoom, Date fromDate, Date toDate, String doctorName, String status, Pageable pageable);
 
     void deleteExamRecord(int examRecordId);
 }

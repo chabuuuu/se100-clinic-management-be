@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface iPrescriptionService {
+    PrescriptionDetailDto convertPrescriptionToDto(Prescription prescription);
     Prescription createPrescription(CreatePrescriptionReq createPrescriptionReq);
     void updatePrescription(int id, UpdatePrescriptionReq updatePrescriptionReq);
     PrescriptionDetailDto getPrescriptionById(int id);

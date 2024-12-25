@@ -3,6 +3,7 @@ package com.se100.clinic_management.controller;
 import com.se100.clinic_management.Interface.iExamRecordService;
 import com.se100.clinic_management.dto.base_format.ResponseVO;
 import com.se100.clinic_management.dto.exam_record.ExamRecordCreateReq;
+import com.se100.clinic_management.dto.exam_record.ExamRecordDetailRes;
 import com.se100.clinic_management.dto.exam_record.ExamRecordUpdateReq;
 import com.se100.clinic_management.model.ExamRecord;
 import com.se100.clinic_management.utils.ResponseEntityGenerator;
@@ -50,7 +51,7 @@ public class ExamRecordController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<ExamRecord>> getExamRecords(
+    public ResponseEntity<Page<ExamRecordDetailRes>> getExamRecords(
             @RequestParam(required = false) Integer examRecordId,
             @RequestParam(required = false) String patientName,
             @RequestParam(required = false) String examRoom,
@@ -60,7 +61,7 @@ public class ExamRecordController {
             @RequestParam(required = false) String status,
             Pageable pageable
     ) {
-        Page<ExamRecord> examRecords = examRecordService.getExamRecords(examRecordId, patientName, examRoom, fromDate, toDate, doctorName, status, pageable);
+        Page<ExamRecordDetailRes> examRecords = examRecordService.getExamRecords(examRecordId, patientName, examRoom, fromDate, toDate, doctorName, status, pageable);
         return ResponseEntity.ok(examRecords);
     }
 

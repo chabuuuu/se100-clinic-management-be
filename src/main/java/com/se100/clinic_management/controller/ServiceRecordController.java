@@ -1,6 +1,8 @@
 package com.se100.clinic_management.controller;
 
 import com.se100.clinic_management.Interface.iServiceRecordService;
+import com.se100.clinic_management.dto.ServiceRecordDetailDto;
+import com.se100.clinic_management.dto.ServiceRecordDto;
 import com.se100.clinic_management.model.ServiceRecord;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ public class ServiceRecordController {
     private iServiceRecordService serviceRecordService;
 
     @GetMapping("")
-    public Page<ServiceRecord> getServiceRecords(
+    public Page<ServiceRecordDto> getServiceRecords(
             @RequestParam(required = false) Integer serviceRecordId,
             @RequestParam(required = false) String patientName,
             @RequestParam(required = false) String receptionistName,
@@ -30,7 +32,7 @@ public class ServiceRecordController {
     }
 
     @GetMapping("detail/{serviceRecordId}")
-    public ServiceRecord getServiceRecordDetail(
+    public ServiceRecordDetailDto getServiceRecordDetail(
             @PathVariable int serviceRecordId
     ) {
         return serviceRecordService.getServiceRecordDetail(serviceRecordId);
