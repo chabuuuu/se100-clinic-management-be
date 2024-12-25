@@ -234,14 +234,16 @@ public class PrescriptionService implements iPrescriptionService {
             prescriptionDto.setStatus(prescription.getStatus());
             prescriptionDto.setServiceRecordId(prescription.getServiceRecordId());
             prescriptionDto.setServiceTypeId(prescription.getServiceTypeId());
-
-            PrescriptionDetailDto.PharmacistDto pharmacistDto = new PrescriptionDetailDto.PharmacistDto();
-
             ModelMapper modelMapper = new ModelMapper();
 
-            modelMapper.map(prescription.getPharmacist(), pharmacistDto);
+            if (prescription.getPharmacist() != null){
+                PrescriptionDetailDto.PharmacistDto pharmacistDto = new PrescriptionDetailDto.PharmacistDto();
 
-            prescriptionDto.setPharmacist(pharmacistDto);
+
+                modelMapper.map(prescription.getPharmacist(), pharmacistDto);
+
+                prescriptionDto.setPharmacist(pharmacistDto);
+            }
 
             if (prescription.getExamRecord() != null) {
                 prescriptionDto.setExamRecordId(prescription.getExamRecord().getId());
@@ -249,9 +251,10 @@ public class PrescriptionService implements iPrescriptionService {
 
             // Set patient
             PrescriptionDetailDto.PatientDto patientDto = new PrescriptionDetailDto.PatientDto();
-            modelMapper.map(prescription.getServiceRecord().getPatient(), patientDto);
-            prescriptionDto.setPatient(patientDto);
-
+            if (prescription.getServiceRecord() != null && prescription.getServiceRecord().getPatient() != null){
+                modelMapper.map(prescription.getServiceRecord().getPatient(), patientDto);
+                prescriptionDto.setPatient(patientDto);
+            }
             return prescriptionDto;
         });
 
