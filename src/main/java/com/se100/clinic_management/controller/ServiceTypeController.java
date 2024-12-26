@@ -24,6 +24,10 @@ public class ServiceTypeController {
   @GetMapping("/{id}")
   public ResponseEntity<ResponseVO> getServiceTypeById(@PathVariable int id) {
     ServiceType serviceType = serviceTypeService.getServiceTypeById(id);
+    // check if deletedAt is null
+    if (serviceType.getDeleteAt() != null) {
+      return ResponseEntityGenerator.deleteFormat("Service type deleted");
+    }
     return ResponseEntityGenerator.findOneFormat(serviceType);
   }
 
@@ -45,7 +49,7 @@ public class ServiceTypeController {
   @DeleteMapping("/{id}")
   public ResponseEntity<ResponseVO> deleteServiceType(@PathVariable int id) {
     serviceTypeService.deleteServiceType(id);
-    return ResponseEntityGenerator.deleteFormat(serviceTypeService.getServiceTypeById(id));
+    return ResponseEntityGenerator.deleteFormat("Service type deleted successfully");
   }
 
   // Get service types with filters

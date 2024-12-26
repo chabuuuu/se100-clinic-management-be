@@ -110,7 +110,8 @@ public class PatientServiceImpl implements iPatientService {
       LocalDate createdAfter, LocalDate createdBefore, Integer minAge, Integer maxAge, String search,
       Pageable pageable) {
 
-    Specification<Patient> spec = Specification.where(PatientSpecification.fullnameContains(fullname))
+    Specification<Patient> spec = Specification.where(PatientSpecification.isNotDeleted())
+        .and(PatientSpecification.fullnameContains(fullname))
         .and(PatientSpecification.hasGender(gender))
         .and(PatientSpecification.hasPhoneNumber(phoneNumber))
         .and(PatientSpecification.createdAfter(createdAfter))

@@ -71,4 +71,9 @@ public class PatientSpecification {
                     criteriaBuilder.like(root.get("phoneNumber"), searchPattern));
         };
     }
+
+    public static Specification<Patient> isNotDeleted() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.isNull(root.get("deleteAt"));
+    }
+
 }

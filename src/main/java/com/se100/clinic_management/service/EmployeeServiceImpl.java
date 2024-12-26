@@ -156,7 +156,8 @@ public class EmployeeServiceImpl implements iEmployeeService {
     @Override
     public Page<Employee> getEmployees(String fullname, String role, LocalDate createdAfter, LocalDate createdBefore,
             String search, Pageable pageable) {
-        Specification<Employee> spec = Specification.where(EmployeeSpecification.fullnameContains(fullname))
+        Specification<Employee> spec = Specification.where(EmployeeSpecification.notDeleted())
+                .and(EmployeeSpecification.fullnameContains(fullname))
                 .and(EmployeeSpecification.hasRole(role))
                 .and(EmployeeSpecification.createdAfter(createdAfter))
                 .and(EmployeeSpecification.createdBefore(createdBefore))
