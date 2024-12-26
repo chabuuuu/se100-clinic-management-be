@@ -20,7 +20,10 @@ public class ServiceRecordSpecification {
                     patientName == null ? builder.conjunction() : builder.like(root.get("patient").get("fullname"), "%" + patientName + "%"),
                     receptionistName == null ? builder.conjunction() : builder.like(root.get("receptionist").get("fullname"), "%" + receptionistName + "%"),
                     fromDate == null ? builder.conjunction() : builder.greaterThanOrEqualTo(root.get("createAt"), fromDate),
-                    toDate == null ? builder.conjunction() : builder.lessThanOrEqualTo(root.get("createAt"), toDate)
+                    toDate == null ? builder.conjunction() : builder.lessThanOrEqualTo(root.get("createAt"), toDate),
+
+                    //deleteAt is null
+                    builder.isNull(root.get("deleteAt"))
             );
         };
     }
