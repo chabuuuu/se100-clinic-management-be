@@ -15,7 +15,9 @@ public class PrescriptionSpecification {
         return (root, query, builder) -> {
             return builder.and(
                     prescriptionId == null ? builder.conjunction() : builder.equal(root.get("id"), prescriptionId),
-                    patientName == null ? builder.conjunction() : builder.like(root.get("patient").get("fullname"), "%" + patientName + "%"),
+
+                    //Get patient name by join to serviceRecord, then get patient
+                    patientName == null ? builder.conjunction() : builder.like(root.get("serviceRecord").get("patient").get("fullname"), "%" + patientName + "%"),
                     pharmacistName == null ? builder.conjunction() : builder.like(root.get("pharmacist").get("fullname"), "%" + pharmacistName + "%"),
                     status == null ? builder.conjunction() : builder.equal(root.get("status"), status),
                     fromDate == null ? builder.conjunction() : builder.greaterThanOrEqualTo(root.get("createAt"), fromDate),
