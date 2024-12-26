@@ -10,6 +10,7 @@ import com.se100.clinic_management.dto.ServiceRecordDto;
 import com.se100.clinic_management.dto.employee.EmployeeProfileDTO;
 import com.se100.clinic_management.dto.exam_record.ExamRecordDetailRes;
 import com.se100.clinic_management.dto.prescriptions.PrescriptionDetailDto;
+import com.se100.clinic_management.dto.service_record.CreateServiceRecordReq;
 import com.se100.clinic_management.dto.test_record.TestRecordDto;
 import com.se100.clinic_management.model.*;
 import com.se100.clinic_management.repository.ServiceRecordRepository;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -156,6 +158,43 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
         serviceRecordDetailDto.setExamTotal(totalExam);
 
         return serviceRecordDetailDto;
+    }
+
+    @Override
+    public ServiceRecordDto createServiceRecord(CreateServiceRecordReq serviceRecord) {
+        ServiceRecord newServiceRecord = new ServiceRecord();
+        newServiceRecord.setDescription(serviceRecord.getDescription());
+        newServiceRecord.setPatientId(serviceRecord.getPatientId());
+        newServiceRecord.setReceptionistId(serviceRecord.getReceptionistId());
+        newServiceRecord.setCreateAt(serviceRecord.getCreateAt());
+
+        ServiceRecord savedServiceRecord = serviceRecordRepository.save(newServiceRecord);
+
+        return convertToServiceRecordDto(savedServiceRecord);
+    }
+
+    @Override
+    public void updateServiceRecord(int serviceRecordId, CreateServiceRecordReq serviceRecord) {
+        ServiceRecord serviceRecordToUpdate = serviceRecordRepository.findById(serviceRecordId).orElse(null);
+
+        if (serviceRecordToUpdate != null) {
+            serviceRecordToUpdate.setDescription(serviceRecord.getDescription());
+            serviceRecordToUpdate.setPatientId(serviceRecord.getPatientId());
+            serviceRecordToUpdate.setReceptionistId(serviceRecord.getReceptionistId());
+            serviceRecordToUpdate.setCreateAt(serviceRecord.getCreateAt());
+
+            serviceRecordRepository.save(serviceRecordToUpdate);
+        }
+    }
+
+    @Override
+    public void deleteServiceRecord(int serviceRecordId) {
+        ServiceRecord serviceRecord = serviceRecordRepository.findById(serviceRecordId).orElse(null);
+        if (serviceRecord != null) {
+            serviceRecord.setDeleteAt(LocalDateTime.now());
+
+            serviceRecordRepository.save(serviceRecord);
+        }
     }
 
 }
