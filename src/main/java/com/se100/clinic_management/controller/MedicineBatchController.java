@@ -27,6 +27,10 @@ public class MedicineBatchController {
   @GetMapping("/{id}")
   public ResponseEntity<ResponseVO> getMedicineBatchById(@PathVariable int id) {
     MedicineBatch medicineBatch = medicineBatchService.getMedicineBatchById(id);
+    // check if deletedAt is null
+    if (medicineBatch.getDeleteAt() != null) {
+      return ResponseEntityGenerator.deleteFormat("Medicine batch deleted");
+    }
     return ResponseEntityGenerator.findOneFormat(medicineBatch);
   }
 
