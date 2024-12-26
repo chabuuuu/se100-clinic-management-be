@@ -45,7 +45,7 @@ public class ServiceTypeController {
   @DeleteMapping("/{id}")
   public ResponseEntity<ResponseVO> deleteServiceType(@PathVariable int id) {
     serviceTypeService.deleteServiceType(id);
-    return ResponseEntityGenerator.deleteFormat(serviceTypeService.getServiceTypeById(id));
+    return ResponseEntityGenerator.deleteFormat("Service type deleted successfully");
   }
 
   // Get service types with filters

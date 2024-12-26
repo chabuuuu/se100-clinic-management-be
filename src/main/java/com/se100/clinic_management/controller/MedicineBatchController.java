@@ -46,7 +46,7 @@ public class MedicineBatchController {
   @DeleteMapping("/{id}")
   public ResponseEntity<ResponseVO> deleteMedicineBatch(@PathVariable int id) {
     medicineBatchService.deleteMedicineBatch(id);
-    return ResponseEntityGenerator.deleteFormat(null);
+    return ResponseEntityGenerator.deleteFormat("Medicine batch deleted successfully");
   }
 
   @GetMapping
