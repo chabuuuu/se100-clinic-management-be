@@ -38,6 +38,14 @@ public class ServiceRating {
   @JoinColumn(name = "service_record_id", nullable = false)
   private ServiceRecord serviceRecord;
 
+  // // Trường chỉ trả về ID của bệnh nhân
+  // @Column(name = "patient_id", nullable = false)
+  // private int patientId;
+
+  // // Trường chỉ trả về ID của service record
+  // @Column(name = "service_record_id", nullable = false)
+  // private int serviceRecordId;
+
   @Column(name = "create_at")
   @Temporal(TemporalType.TIMESTAMP)
   private LocalDateTime createAt;
