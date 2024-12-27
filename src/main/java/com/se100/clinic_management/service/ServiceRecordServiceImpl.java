@@ -81,6 +81,13 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
         //Set test records
         serviceRecordDetailDto.setTestRecords(testRecordDtos);
 
+
+        //Set base field
+        serviceRecordDetailDto.setCreateAt(serviceRecord.getCreateAt());
+        serviceRecordDetailDto.setUpdateAt(serviceRecord.getUpdateAt());
+        serviceRecordDetailDto.setCreatedBy(serviceRecord.getCreatedBy());
+        serviceRecordDetailDto.setUpdatedBy(serviceRecord.getUpdatedBy());
+
         return serviceRecordDetailDto;
     }
 
@@ -95,6 +102,13 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
         if (serviceRecord.getReceptionist() != null) {
             serviceRecordDto.setReceptionist(modelMapper.map(serviceRecord.getReceptionist(), EmployeeProfileDTO.class));
         }
+
+        //Set base field
+        serviceRecordDto.setCreateAt(serviceRecord.getCreateAt());
+        serviceRecordDto.setUpdateAt(serviceRecord.getUpdateAt());
+        serviceRecordDto.setCreatedBy(serviceRecord.getCreatedBy());
+        serviceRecordDto.setUpdatedBy(serviceRecord.getUpdatedBy());
+
         return serviceRecordDto;
     }
 
