@@ -54,6 +54,9 @@ public class ServiceRatingSpecification {
         predicates.add(builder.lessThanOrEqualTo(root.get("createAt"), createdBefore));
       }
 
+      // Chỉ lấy các bản ghi chưa bị xóa (deleteAt IS NULL)
+      predicates.add(builder.isNull(root.get("deleteAt")));
+
       return builder.and(predicates.toArray(new Predicate[0]));
     };
   }
