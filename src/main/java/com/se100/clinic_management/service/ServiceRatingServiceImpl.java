@@ -44,6 +44,7 @@ public class ServiceRatingServiceImpl implements iServiceRatingService {
     return new ServiceRatingDto(
         rating.getId(),
         rating.getScore(),
+        rating.getFeedback(),
         patientDto,
         serviceRecordDto, rating.getCreateAt(),
         rating.getUpdateAt(),
@@ -100,6 +101,7 @@ public class ServiceRatingServiceImpl implements iServiceRatingService {
     return new ServiceRatingDto(
         updatedRating.getId(),
         updatedRating.getScore(),
+        updatedRating.getFeedback(),
         patientDto,
         serviceRecordDto,
         updatedRating.getCreateAt(),
@@ -144,6 +146,7 @@ public class ServiceRatingServiceImpl implements iServiceRatingService {
       return new ServiceRatingDto(
           rating.getId(),
           rating.getScore(),
+          rating.getFeedback(),
           patientDto,
           serviceRecordDto,
           rating.getCreateAt(),

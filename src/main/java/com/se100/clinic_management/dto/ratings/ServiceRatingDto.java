@@ -10,6 +10,7 @@ import lombok.Data;
 public class ServiceRatingDto {
   private int id;
   private int score;
+  private String feedback;
   private PatientDto patient;
   private ServiceRecordDto serviceRecord;
   private LocalDateTime createAt;
