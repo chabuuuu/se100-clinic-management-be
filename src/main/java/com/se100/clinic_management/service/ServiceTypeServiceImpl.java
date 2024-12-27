@@ -26,7 +26,14 @@ public class ServiceTypeServiceImpl implements iServiceTypeService {
   @Override
   public ServiceType getServiceTypeById(int id) {
     Optional<ServiceType> optionalServiceType = serviceTypeRepository.findById(id);
-    return optionalServiceType.orElseThrow(() -> new RuntimeException("Service type not found"));
+
+    ServiceType serviceType = optionalServiceType.orElseThrow(() -> new RuntimeException("Service type not found"));
+
+    if (serviceType.getDeleteAt() != null) {
+      throw new RuntimeException("Service type has been deleted");
+    }
+
+    return serviceType;
   }
 
   @Override

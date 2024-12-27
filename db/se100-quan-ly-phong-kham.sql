@@ -187,6 +187,7 @@ CREATE TABLE `service_ratings` (
   `update_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `delete_At` datetime DEFAULT NULL,
   `patient_id` int NOT NULL,
+  `service_record_id` int DEFAULT NOT NULL,
   PRIMARY KEY (`id`),
   KEY `service_ratings_patients_id_fk` (`patient_id`),
   CONSTRAINT `service_ratings_patients_id_fk` FOREIGN KEY (`patient_id`) REFERENCES `patients` (`id`)

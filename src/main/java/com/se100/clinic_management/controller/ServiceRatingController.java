@@ -46,7 +46,7 @@ public class ServiceRatingController {
   @DeleteMapping("/{id}")
   public ResponseEntity<ResponseVO> deleteRating(@PathVariable int id) {
     serviceRatingService.deleteRating(id);
-    return ResponseEntityGenerator.deleteFormat(serviceRatingService.getRatingById(id));
+    return ResponseEntityGenerator.deleteFormat("Service rating deleted successfully");
   }
 
   // Get service ratings with filters
