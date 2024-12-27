@@ -15,6 +15,7 @@ import com.se100.clinic_management.dto.test_record.TestRecordDto;
 import com.se100.clinic_management.model.*;
 import com.se100.clinic_management.repository.ServiceRecordRepository;
 import com.se100.clinic_management.specification.ServiceRecordSpecification;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,7 @@ import java.util.List;
 @Service
 public class ServiceRecordServiceImpl implements iServiceRecordService {
     @Autowired
-    private ServiceRecordRepository serviceRecordRepository;
+    ServiceRecordRepository serviceRecordRepository;
 
     @Autowired iPrescriptionService prescriptionService;
 
@@ -124,6 +125,7 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
         return result.map(this::convertToServiceRecordDto);
     }
 
+
     @Override
     public ServiceRecordDetailDto getServiceRecordDetail(int serviceRecordId) {
         ServiceRecord result = serviceRecordRepository.findById(serviceRecordId).orElse(null);
@@ -210,5 +212,33 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
             serviceRecordRepository.save(serviceRecord);
         }
     }
+
+    @Override
+    public Float getTotalServiceFee(int serviceRecordId) {
+        ServiceRecord result = serviceRecordRepository.findById(serviceRecordId).orElse(null);
+
+        //Caculate total
+        Float total = 0f;
+
+        //Caculate total of prescriptions
+        for (Prescription prescription : result.getPrescriptions()) {
+            if (prescription.getTotal() != null) {
+                total += prescription.getTotal();
+            }
+        }
+
+        //Caculate total of test records
+        for (TestRecord testRecord : result.getTestRecords()) {
+            ServiceType serviceType = testRecord.getServiceType();
+            total += serviceType.getPrice().floatValue();
+        }
+
+        //Caculate total of exam records
+        for (ExamRecord examRecord : result.getExamRecords()) {
+            ServiceType serviceType = examRecord.getServiceType();
+            total += serviceType.getPrice().floatValue();
+        }
+
+        return total;    }
 
 }

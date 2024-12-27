@@ -15,4 +15,5 @@ public interface iServiceRecordService {
     ServiceRecordDto createServiceRecord(CreateServiceRecordReq serviceRecord);
     void updateServiceRecord(int serviceRecordId, CreateServiceRecordReq serviceRecord);
     void deleteServiceRecord(int serviceRecordId);
+    Float getTotalServiceFee(int serviceRecordId);
 }
