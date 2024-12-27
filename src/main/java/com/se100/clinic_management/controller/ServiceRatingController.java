@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.se100.clinic_management.dto.base_format.ResponseVO;
+import com.se100.clinic_management.dto.ratings.ServiceRatingDto;
 
 @RestController
 @RequestMapping("/api/service-ratings")
@@ -24,7 +25,7 @@ public class ServiceRatingController {
   // Get service rating by ID
   @GetMapping("/{id}")
   public ResponseEntity<ResponseVO> getRatingById(@PathVariable int id) {
-    ServiceRating rating = serviceRatingService.getRatingById(id);
+    ServiceRatingDto rating = serviceRatingService.getRatingById(id);
     return ResponseEntityGenerator.findOneFormat(rating);
   }
 
@@ -38,7 +39,7 @@ public class ServiceRatingController {
   // Update an existing service rating
   @PutMapping("/{id}")
   public ResponseEntity<ResponseVO> updateRating(@PathVariable int id, @RequestBody ServiceRating rating) {
-    ServiceRating updatedRating = serviceRatingService.updateRating(id, rating);
+    ServiceRatingDto updatedRating = serviceRatingService.updateRating(id, rating);
     return ResponseEntityGenerator.updateFormat(updatedRating);
   }
 
@@ -51,15 +52,16 @@ public class ServiceRatingController {
 
   // Get service ratings with filters
   @GetMapping
-  public ResponseEntity<Page<ServiceRating>> getRatings(
+  public ResponseEntity<Page<ServiceRatingDto>> getRatings(
       @RequestParam(required = false) Integer minScore,
       @RequestParam(required = false) Integer maxScore,
       @RequestParam(required = false) Integer patientId,
       @RequestParam(required = false) LocalDateTime createdAfter,
       @RequestParam(required = false) LocalDateTime createdBefore,
       Pageable pageable) {
-    Page<ServiceRating> ratings = serviceRatingService.getRatings(minScore, maxScore, patientId,
+    Page<ServiceRatingDto> ratings = serviceRatingService.getRatings(minScore, maxScore, patientId,
         createdAfter, createdBefore, pageable);
+
     return new ResponseEntity<>(ratings, HttpStatus.OK);
   }
 
