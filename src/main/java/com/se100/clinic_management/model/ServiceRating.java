@@ -34,9 +34,9 @@ public class ServiceRating {
   @JoinColumn(name = "patient_id", nullable = false)
   private Patient patient;
 
-  // @ManyToOne()
-  // @JoinColumn(name = "service_record_id", nullable = false)
-  // private ServiceRecord service;
+  @ManyToOne()
+  @JoinColumn(name = "service_record_id", nullable = false)
+  private ServiceRecord serviceRecord;
 
   @Column(name = "create_at")
   @Temporal(TemporalType.TIMESTAMP)

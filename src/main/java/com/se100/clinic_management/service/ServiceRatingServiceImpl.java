@@ -23,7 +23,14 @@ public class ServiceRatingServiceImpl implements iServiceRatingService {
   @Override
   public ServiceRating getRatingById(int id) {
     Optional<ServiceRating> optionalRating = serviceRatingRepository.findById(id);
-    return optionalRating.orElseThrow(() -> new RuntimeException("Rating not found"));
+
+    ServiceRating rating = optionalRating.orElseThrow(() -> new RuntimeException("Rating not found"));
+
+    if (rating.getDeleteAt() != null) {
+      throw new RuntimeException("Rating has been deleted");
+    }
+
+    return rating;
   }
 
   @Override
