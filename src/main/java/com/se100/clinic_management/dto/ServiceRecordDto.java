@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ServiceRecordDto {
+public class ServiceRecordDto extends BaseRes{
     private int id;
 
     private String description;
