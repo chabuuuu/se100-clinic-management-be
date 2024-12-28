@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,7 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import com.se100.clinic_management.exception.BaseError;
 
 @Service
 public class EmployeeServiceImpl implements iEmployeeService {
@@ -49,12 +53,19 @@ public class EmployeeServiceImpl implements iEmployeeService {
     }
 
     // Thêm nhân viên mới
+    @SneakyThrows
     @Override
     public Employee addEmployee(Employee employee) {
-        // Xử lý logic trước khi lưu (nếu cần, ví dụ mã hóa mật khẩu)
-        // Đặt thời gian tạo nhân viên
-        employee.setCreateAt(java.time.LocalDateTime.now());
-        return employeeRepository.save(employee);
+        try {
+            employee.setCreateAt(LocalDateTime.now());
+            return employeeRepository.save(employee);
+        } catch (DataIntegrityViolationException ex) {
+            if (ex.getMessage().contains("employees.username")) {
+                throw new BaseError("USERNAME_EXISTS", "Username đã tồn tại, vui lòng chọn tên khác.",
+                        HttpStatus.BAD_REQUEST);
+            }
+            throw new BaseError("INTERNAL_ERROR", "Đã xảy ra lỗi hệ thống.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Xóa nhân viên theo id
