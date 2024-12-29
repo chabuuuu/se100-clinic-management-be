@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ServiceRecordDetailDto {
+public class ServiceRecordDetailDto extends BaseRes{
 
     private int id;
 
