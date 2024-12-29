@@ -6,7 +6,6 @@ import com.se100.clinic_management.model.PrescriptionDetail;
 import com.se100.clinic_management.repository.PrescriptionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.se100.clinic_management.Interface.iDrugSoldService;
 import java.time.LocalDateTime;
 import java.util.List;
 
