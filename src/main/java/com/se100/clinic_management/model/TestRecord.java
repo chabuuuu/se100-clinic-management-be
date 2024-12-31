@@ -21,6 +21,12 @@ public class TestRecord extends BaseEntity {
     @Column(name = "numerical_order")
     private Integer numericalOrder;
 
+    @Column(name = "test_name")
+    private String testName;
+
+    @Column(name = "test_room")
+    private String testRoom;
+
     @Column(columnDefinition = "json", name = "test_artachments")
     @Convert(converter = StringListConverter.class)
     private List<String> testArtachments;
