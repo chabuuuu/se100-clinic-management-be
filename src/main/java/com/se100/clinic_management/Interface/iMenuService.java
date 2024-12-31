@@ -8,4 +8,8 @@ public interface iMenuService {
     List<AppMenu> getMyMenu();
 
     void updateRoleMenu(String roleId, List<String> menuIds);
+
+    List<AppMenu> getAllMenu();
+
+    List<AppMenu> getRoleMenu(String roleId);
 }
