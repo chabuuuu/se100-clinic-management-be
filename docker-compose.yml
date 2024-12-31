@@ -1,13 +1,14 @@
 version: "3.9"
 
 services:
-
   backend-clinic-management:
     container_name: backend-clinic-management
     build:
       context: .
-      dockerfile: Dockerfile  # Tên Dockerfile trong thư mục hiện tại
+      dockerfile: Dockerfile # Tên Dockerfile trong thư mục hiện tại
     image: haphuthinh/backend-clinic-management:latest
+    volumes:
+      - ./docker-data/uploads:/usr/app/uploads
     restart: unless-stopped
     ports:
       - "8080:8080"
