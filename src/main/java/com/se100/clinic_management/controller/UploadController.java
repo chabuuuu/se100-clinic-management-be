@@ -71,4 +71,31 @@ public class UploadController {
           .body(null);
     }
   }
+
+  @GetMapping("/view-image/{fileName}")
+  public ResponseEntity<Resource> viewImage(@PathVariable String fileName) {
+    try {
+      Path filePath = fileStorageLocation.resolve(fileName).normalize();
+
+      Resource resource = new UrlResource(filePath.toUri());
+
+      if (!resource.exists()) {
+        return ResponseEntity.notFound().build();
+      }
+
+      String contentType = Files.probeContentType(filePath);
+      if (contentType == null) {
+        contentType = "application/octet-stream";
+      }
+
+      return ResponseEntity.ok()
+          .contentType(MediaType.parseMediaType(contentType))
+          .body(resource);
+
+    } catch (IOException e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(null);
+    }
+  }
+
 }

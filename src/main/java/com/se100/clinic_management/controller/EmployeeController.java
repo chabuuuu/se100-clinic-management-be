@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.se100.clinic_management.model.Employee;
 
@@ -124,11 +125,16 @@ public class EmployeeController {
     try {
       // Lưu tệp vào thư mục
       String filename = id + "_" + file.getOriginalFilename();
-      Path path = Paths.get(uploadDir + filename);
+      Path path = Paths.get(uploadDir + "/" + filename);
       Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
       // Cập nhật avatar cho employee
-      employee.setAvatar(filename);
+      String avatarLink = ServletUriComponentsBuilder.fromCurrentContextPath()
+          .path("api/files/view-image/")
+          .path(filename)
+          .toUriString();
+
+      employee.setAvatar(avatarLink);
       employeeService.updateEmployee(id, employee); // Lưu employee với avatar mới
 
       return ResponseEntity.ok("Avatar uploaded successfully");
