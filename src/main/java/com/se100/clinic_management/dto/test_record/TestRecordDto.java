@@ -2,11 +2,7 @@ package com.se100.clinic_management.dto.test_record;
 
 import com.se100.clinic_management.dto.PatientDto;
 import com.se100.clinic_management.dto.employee.EmployeeProfileDTO;
-import com.se100.clinic_management.dto.prescriptions.PrescriptionDetailDto;
-import com.se100.clinic_management.model.Employee;
-import com.se100.clinic_management.model.Patient;
 import com.se100.clinic_management.model.ServiceType;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +19,10 @@ public class TestRecordDto {
     private Integer id;
 
     private Date testDate;
+
+    private String testName;
+
+    private String testRoom;
 
     private Integer numericalOrder;
 
