@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/menus")
@@ -37,6 +38,19 @@ public class MenuController {
         menuService.updateRoleMenu(roleId, menuIds);
 
         return ResponseEntityGenerator.updateFormat("Update role menu successfully");
+    }
+
+    @GetMapping("all")
+    public ResponseEntity<ResponseVO> getAll() {
+        List<AppMenu> results = menuService.getAllMenu();
+
+        return ResponseEntityGenerator.find(results);
+    }
+
+    @GetMapping("by-role/{roleId}")
+    public ResponseEntity<ResponseVO> getMethodName(@PathVariable String roleId) {
+        List<AppMenu> results = menuService.getRoleMenu(roleId);
+        return ResponseEntityGenerator.find(results);
     }
 
 }

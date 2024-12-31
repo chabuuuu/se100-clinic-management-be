@@ -9,6 +9,7 @@ import com.se100.clinic_management.Interface.iMenuService;
 import com.se100.clinic_management.dto.JwtTokenVo;
 import com.se100.clinic_management.model.AppMenu;
 import com.se100.clinic_management.model.Role;
+import com.se100.clinic_management.repository.AppMenuRepository;
 import com.se100.clinic_management.repository.RoleRepository;
 import com.se100.clinic_management.utils.SecurityUtil;
 
@@ -17,6 +18,9 @@ public class MenuServiceImpl implements iMenuService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private AppMenuRepository appMenuRepository;
 
     @Override
     public List<AppMenu> getMyMenu() {
@@ -52,6 +56,22 @@ public class MenuServiceImpl implements iMenuService {
         }
 
         roleRepository.save(role);
+    }
+
+    @Override
+    public List<AppMenu> getAllMenu() {
+        return appMenuRepository.findAll();
+    }
+
+    @Override
+    public List<AppMenu> getRoleMenu(String roleId) {
+        Role role = roleRepository.findById(roleId).orElse(null);
+
+        if (role == null) {
+            return null;
+        }
+
+        return role.getMenus();
     }
 
 }
