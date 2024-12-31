@@ -10,6 +10,7 @@ import com.se100.clinic_management.dto.employee.EmployeeProfileDTO;
 import com.se100.clinic_management.dto.invoice.CreateInvoiceReq;
 import com.se100.clinic_management.dto.invoice.InvoiceDetailDto;
 import com.se100.clinic_management.dto.invoice.InvoiceDto;
+import com.se100.clinic_management.dto.invoice.UpdateInvoiceStatusReq;
 import com.se100.clinic_management.exception.BaseError;
 import com.se100.clinic_management.model.Employee;
 import com.se100.clinic_management.model.Invoice;
@@ -37,21 +38,22 @@ import java.util.Date;
 @Service
 public class InvoiceServiceImpl implements iInvoiceService {
     @Autowired
-    private  InvoiceRepository invoiceRepository;
+    private InvoiceRepository invoiceRepository;
     @Autowired
-    private  iServiceRecordService serviceRecordService;
+    private iServiceRecordService serviceRecordService;
     @Autowired
-    private  EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
     @Autowired
-    private  ServiceRecordRepository serviceRecordRepository;
+    private ServiceRecordRepository serviceRecordRepository;
 
     @SneakyThrows
     @Override
     public void createInvoice(CreateInvoiceReq createInvoiceReq) {
-        //Only receptionist can create invoice
+        // Only receptionist can create invoice
         JwtTokenVo jwtTokenVo = SecurityUtil.getSession();
         if (!jwtTokenVo.getRoles().contains(RoleConst.RECEPTIONIST)) {
-            throw new BaseError("UNAUTHORIZED", "Only receptionists are authorized to create invoice", HttpStatus.FORBIDDEN);
+            throw new BaseError("UNAUTHORIZED", "Only receptionists are authorized to create invoice",
+                    HttpStatus.FORBIDDEN);
         }
 
         Invoice invoice = new Invoice();
@@ -70,13 +72,15 @@ public class InvoiceServiceImpl implements iInvoiceService {
         invoice.setTotal(total);
         invoice.setStatus("UNPAID");
 
-
-        invoiceRepository.insertInvoice(invoice.getReceptionistId(), invoice.getTotal(), invoice.getServiceRecordId(), invoice.getStatus());
+        invoiceRepository.insertInvoice(invoice.getReceptionistId(), invoice.getTotal(), invoice.getServiceRecordId(),
+                invoice.getStatus());
     }
 
     @Override
-    public Page<InvoiceDto> getInvoices(String patientName, String receptionistName, Date startDate, Date endDate, Pageable pageable) {
-        Specification<Invoice> specification = InvoiceSpecification.filter(patientName, receptionistName, startDate, endDate);
+    public Page<InvoiceDto> getInvoices(String patientName, String receptionistName, Date startDate, Date endDate,
+            Pageable pageable) {
+        Specification<Invoice> specification = InvoiceSpecification.filter(patientName, receptionistName, startDate,
+                endDate);
         Page<Invoice> invoices = invoiceRepository.findAll(specification, pageable);
 
         return invoices.map(invoice -> {
@@ -125,7 +129,8 @@ public class InvoiceServiceImpl implements iInvoiceService {
         invoiceDetailDto.setReceptionistId(invoice.getReceptionistId());
         invoiceDetailDto.setServiceRecordId(invoice.getServiceRecordId());
 
-        ServiceRecordDetailDto serviceRecord = serviceRecordService.getServiceRecordDetail(invoice.getServiceRecordId());
+        ServiceRecordDetailDto serviceRecord = serviceRecordService
+                .getServiceRecordDetail(invoice.getServiceRecordId());
         invoiceDetailDto.setServiceRecord(serviceRecord);
 
         EmployeeProfileDTO receptionist = new EmployeeProfileDTO();
@@ -142,5 +147,17 @@ public class InvoiceServiceImpl implements iInvoiceService {
         invoiceDetailDto.setUpdatedBy(invoice.getUpdatedBy());
 
         return invoiceDetailDto;
+    }
+
+    @Override
+    @SneakyThrows
+    public void updateInvoiceStatus(int invoiceId, UpdateInvoiceStatusReq updateInvoiceStatusReq) {
+        Invoice invoice = invoiceRepository.findById(invoiceId).orElse(null);
+        if (invoice == null) {
+            throw new BaseError("INVOICE_NOT_FOUND", "Invoice not found", HttpStatus.BAD_REQUEST);
+        }
+        invoice.setStatus(updateInvoiceStatusReq.getStatus());
+        invoiceRepository.save(invoice);
+        return;
     }
 }
