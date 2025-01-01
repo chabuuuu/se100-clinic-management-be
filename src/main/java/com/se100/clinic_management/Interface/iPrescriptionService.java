@@ -10,9 +10,15 @@ import org.springframework.data.domain.Pageable;
 
 public interface iPrescriptionService {
     PrescriptionDetailDto convertPrescriptionToDto(Prescription prescription);
-    Prescription createPrescription(CreatePrescriptionReq createPrescriptionReq);
+
+    void createPrescription(CreatePrescriptionReq createPrescriptionReq);
+
     void updatePrescription(int id, UpdatePrescriptionReq updatePrescriptionReq);
+
     PrescriptionDetailDto getPrescriptionById(int id);
-    Page<PrescriptionDto> getPrescriptions(Integer prescriptionId, String patientName, String pharmacistName, String status, String fromDate, String toDate, Pageable pageable);
+
+    Page<PrescriptionDto> getPrescriptions(Integer prescriptionId, String patientName, String pharmacistName,
+            String status, String fromDate, String toDate, Pageable pageable);
+
     void deletePrescription(int id);
 }
