@@ -22,10 +22,9 @@ public class PrescriptionController {
 
     @PostMapping("/create")
     public ResponseEntity<ResponseVO> createPrescription(
-            @RequestBody CreatePrescriptionReq createPrescriptionReq
-            ) {
-        Prescription prescription = prescriptionService.createPrescription(createPrescriptionReq);
-        return ResponseEntityGenerator.createdFormat(prescription);
+            @RequestBody CreatePrescriptionReq createPrescriptionReq) {
+        prescriptionService.createPrescription(createPrescriptionReq);
+        return ResponseEntityGenerator.createdFormat("Create success");
     }
 
     @GetMapping("/{id}")
@@ -37,8 +36,7 @@ public class PrescriptionController {
     @PutMapping("/update/{id}")
     public ResponseEntity<ResponseVO> updatePrescription(
             @PathVariable int id,
-            @RequestBody UpdatePrescriptionReq updatePrescriptionReq
-    ) {
+            @RequestBody UpdatePrescriptionReq updatePrescriptionReq) {
         prescriptionService.updatePrescription(id, updatePrescriptionReq);
         return ResponseEntityGenerator.updateFormat("Update success");
     }
@@ -51,9 +49,9 @@ public class PrescriptionController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String fromDate,
             @RequestParam(required = false) String toDate,
-            Pageable pageable
-    ) {
-        Page<PrescriptionDto> prescriptions = prescriptionService.getPrescriptions(prescriptionId, patientName, pharmacistName, status, fromDate, toDate, pageable);
+            Pageable pageable) {
+        Page<PrescriptionDto> prescriptions = prescriptionService.getPrescriptions(prescriptionId, patientName,
+                pharmacistName, status, fromDate, toDate, pageable);
         return ResponseEntity.ok(prescriptions);
     }
 
