@@ -7,15 +7,18 @@ import com.se100.clinic_management.dto.prescriptions.CreatePrescriptionReq;
 import com.se100.clinic_management.dto.prescriptions.PrescriptionDetailDto;
 import com.se100.clinic_management.dto.prescriptions.PrescriptionDto;
 import com.se100.clinic_management.dto.prescriptions.UpdatePrescriptionReq;
+import com.se100.clinic_management.enums.RoleEnum;
 import com.se100.clinic_management.exception.BaseError;
 import com.se100.clinic_management.model.Employee;
 import com.se100.clinic_management.model.ExamRecord;
 import com.se100.clinic_management.model.Prescription;
 import com.se100.clinic_management.model.PrescriptionDetail;
+import com.se100.clinic_management.model.ServiceRecord;
 import com.se100.clinic_management.repository.EmployeeRepository;
 import com.se100.clinic_management.repository.ExamRecordRepository;
 import com.se100.clinic_management.repository.PrescriptionDetailRepository;
 import com.se100.clinic_management.repository.PrescriptionRepository;
+import com.se100.clinic_management.repository.ServiceRecordRepository;
 import com.se100.clinic_management.specification.PrescriptionSpecification;
 import com.se100.clinic_management.utils.PageUtil;
 import com.se100.clinic_management.utils.SecurityUtil;
@@ -46,9 +49,12 @@ public class PrescriptionService implements iPrescriptionService {
     @Autowired
     private PrescriptionDetailRepository prescriptionDetailRepository;
 
+    @Autowired
+    private ServiceRecordRepository serviceRecordRepository;
+
     @Override
-    public PrescriptionDetailDto convertPrescriptionToDto(Prescription prescription){
-        if (prescription == null){
+    public PrescriptionDetailDto convertPrescriptionToDto(Prescription prescription) {
+        if (prescription == null) {
             return null;
         }
 
@@ -66,13 +72,13 @@ public class PrescriptionService implements iPrescriptionService {
 
         prescriptionDetailDto.setPharmacist(pharmacistDto);
 
-        if (prescription.getExamRecord() != null){
+        if (prescription.getExamRecord() != null) {
             prescriptionDetailDto.setExamRecordId(prescription.getExamRecord().getId());
         }
 
         List<PrescriptionDetailDto.MedicineDetailDto> medicineDetailDtos = new ArrayList<>();
 
-        for (PrescriptionDetail prescriptionDetail : prescription.getPrescriptionDetails()){
+        for (PrescriptionDetail prescriptionDetail : prescription.getPrescriptionDetails()) {
             PrescriptionDetailDto.MedicineDetailDto detailDto = new PrescriptionDetailDto.MedicineDetailDto();
             detailDto.setMedicine(prescriptionDetail.getMedicine());
             detailDto.setDosage(prescriptionDetail.getDosage());
@@ -84,12 +90,12 @@ public class PrescriptionService implements iPrescriptionService {
 
         prescriptionDetailDto.setPrescriptionDetails(medicineDetailDtos);
 
-        //Set patient
+        // Set patient
         PrescriptionDetailDto.PatientDto patientDto = new PrescriptionDetailDto.PatientDto();
         modelMapper.map(prescription.getServiceRecord().getPatient(), patientDto);
         prescriptionDetailDto.setPatient(patientDto);
 
-        //Base entity
+        // Base entity
         prescriptionDetailDto.setCreateAt(prescription.getCreateAt());
         prescriptionDetailDto.setUpdateAt(prescription.getUpdateAt());
         prescriptionDetailDto.setCreatedBy(prescription.getCreatedBy());
@@ -100,9 +106,37 @@ public class PrescriptionService implements iPrescriptionService {
 
     @SneakyThrows
     @Override
-    public Prescription createPrescription(CreatePrescriptionReq createPrescriptionReq) {
+    public void createPrescription(CreatePrescriptionReq createPrescriptionReq) {
         Prescription prescription = new Prescription();
-        prescription.setServiceRecordId(createPrescriptionReq.getServiceRecordId());
+
+        // If did not have service record id => create new service record
+        if (createPrescriptionReq.getServiceRecordId() == null) {
+            // Get currently logged receptionist
+            JwtTokenVo jwtTokenVo = SecurityUtil.getSession();
+
+            int receptionistId = jwtTokenVo.getUserId();
+
+            String role = jwtTokenVo.getRoles().get(0);
+
+            if (!role.equals(RoleEnum.RECEPTIONIST.toString())) {
+                throw new BaseError("NOT_RECEPTIONIST",
+                        "You are not a receptionist, please create new service record before do this",
+                        HttpStatus.FORBIDDEN);
+            }
+
+            // Create new service_record
+            ServiceRecord serviceRecord = new ServiceRecord();
+            serviceRecord.setPatientId(createPrescriptionReq.getPatientId());
+            serviceRecord.setReceptionistId(receptionistId);
+
+            // Save service record
+            ServiceRecord savedServiceRecord = serviceRecordRepository.save(serviceRecord);
+
+            prescription.setServiceRecordId(savedServiceRecord.getId());
+        } else {
+            prescription.setServiceRecordId(createPrescriptionReq.getServiceRecordId());
+        }
+
         prescription.setServiceTypeId(createPrescriptionReq.getServiceTypeId());
 
         // Set pharmacist
@@ -147,7 +181,7 @@ public class PrescriptionService implements iPrescriptionService {
 
         savedPrescription.setPrescriptionDetails(prescriptionDetails);
 
-        return prescriptionRepository.save(savedPrescription);
+        prescriptionRepository.save(savedPrescription);
     }
 
     @SneakyThrows
@@ -213,7 +247,7 @@ public class PrescriptionService implements iPrescriptionService {
     @Override
     public PrescriptionDetailDto getPrescriptionById(int id) {
         Prescription prescription = prescriptionRepository.findById(id).orElse(null);
-        
+
         PrescriptionDetailDto prescriptionDetailDto = convertPrescriptionToDto(prescription);
 
         return prescriptionDetailDto;
@@ -236,9 +270,8 @@ public class PrescriptionService implements iPrescriptionService {
             prescriptionDto.setServiceTypeId(prescription.getServiceTypeId());
             ModelMapper modelMapper = new ModelMapper();
 
-            if (prescription.getPharmacist() != null){
+            if (prescription.getPharmacist() != null) {
                 PrescriptionDetailDto.PharmacistDto pharmacistDto = new PrescriptionDetailDto.PharmacistDto();
-
 
                 modelMapper.map(prescription.getPharmacist(), pharmacistDto);
 
@@ -251,7 +284,7 @@ public class PrescriptionService implements iPrescriptionService {
 
             // Set patient
             PrescriptionDetailDto.PatientDto patientDto = new PrescriptionDetailDto.PatientDto();
-            if (prescription.getServiceRecord() != null && prescription.getServiceRecord().getPatient() != null){
+            if (prescription.getServiceRecord() != null && prescription.getServiceRecord().getPatient() != null) {
                 modelMapper.map(prescription.getServiceRecord().getPatient(), patientDto);
                 prescriptionDto.setPatient(patientDto);
             }

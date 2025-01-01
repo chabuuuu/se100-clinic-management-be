@@ -21,6 +21,8 @@ public class CreatePrescriptionReq {
 
     private Integer examRecordId;
 
+    private Integer patientId;
+
     private List<PrescriptionDetailDto> prescriptionDetails;
 
     @Getter
@@ -34,6 +36,6 @@ public class CreatePrescriptionReq {
 
         private String notes;
 
-        private String dosage; //Liều lượng
+        private String dosage; // Liều lượng
     }
 }
