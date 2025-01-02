@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("api/employees")
@@ -180,7 +181,7 @@ public class EmployeeController {
       @RequestParam(required = false) String createdAfter,
       @RequestParam(required = false) String createdBefore,
       @RequestParam(required = false) String search,
-      Pageable pageable) {
+      @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
 
     LocalDate createdAfterDate = createdAfter != null ? LocalDate.parse(createdAfter) : null;
     LocalDate createdBeforeDate = createdBefore != null ? LocalDate.parse(createdBefore) : null;

@@ -268,6 +268,13 @@ public class PrescriptionService implements iPrescriptionService {
             prescriptionDto.setStatus(prescription.getStatus());
             prescriptionDto.setServiceRecordId(prescription.getServiceRecordId());
             prescriptionDto.setServiceTypeId(prescription.getServiceTypeId());
+
+            // Set base entity
+            prescriptionDto.setCreateAt(prescription.getCreateAt());
+            prescriptionDto.setUpdateAt(prescription.getUpdateAt());
+            prescriptionDto.setCreatedBy(prescription.getCreatedBy());
+            prescriptionDto.setUpdatedBy(prescription.getUpdatedBy());
+
             ModelMapper modelMapper = new ModelMapper();
 
             if (prescription.getPharmacist() != null) {

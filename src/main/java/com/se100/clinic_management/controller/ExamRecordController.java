@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,8 @@ public class ExamRecordController {
     }
 
     @PutMapping("/update/{examRecordId}")
-    public ResponseEntity<ResponseVO> update(@RequestBody ExamRecordUpdateReq examRecordUpdateReq, @PathVariable int examRecordId) {
+    public ResponseEntity<ResponseVO> update(@RequestBody ExamRecordUpdateReq examRecordUpdateReq,
+            @PathVariable int examRecordId) {
         examRecordService.updateExamRecord(examRecordUpdateReq, examRecordId);
         return ResponseEntityGenerator.okFormat("Update successfully");
     }
@@ -59,9 +61,10 @@ public class ExamRecordController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate,
             @RequestParam(required = false) String doctorName,
             @RequestParam(required = false) String status,
-            Pageable pageable
-    ) {
-        Page<ExamRecordDetailRes> examRecords = examRecordService.getExamRecords(examRecordId, patientName, examRoom, fromDate, toDate, doctorName, status, pageable);
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+
+        Page<ExamRecordDetailRes> examRecords = examRecordService.getExamRecords(examRecordId, patientName, examRoom,
+                fromDate, toDate, doctorName, status, pageable);
         return ResponseEntity.ok(examRecords);
     }
 
