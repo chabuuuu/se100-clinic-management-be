@@ -8,10 +8,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MedicineBatchSpecification {
@@ -22,6 +20,7 @@ public class MedicineBatchSpecification {
       LocalDateTime startDate,
       LocalDateTime endDate,
       Boolean isActive) {
+
     return (Root<MedicineBatch> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
@@ -30,16 +29,17 @@ public class MedicineBatchSpecification {
         predicates.add(builder.equal(root.get("medicine").get("id"), medicineId));
       }
 
-      // Lọc theo ngày hết hạn
+      // Lọc theo ngày hết hạn (expireDate)
       if (isExpired != null) {
+        LocalDateTime now = LocalDateTime.now();
         if (isExpired) {
-          predicates.add(builder.lessThan(root.get("expireDate"), new Date()));
+          predicates.add(builder.lessThan(root.get("expireDate"), now));
         } else {
-          predicates.add(builder.greaterThanOrEqualTo(root.get("expireDate"), new Date()));
+          predicates.add(builder.greaterThanOrEqualTo(root.get("expireDate"), now));
         }
       }
 
-      // Lọc theo ngày nhập (startDate và endDate)
+      // Lọc theo ngày tạo (createAt) trong khoảng startDate và endDate
       if (startDate != null) {
         predicates.add(builder.greaterThanOrEqualTo(root.get("createAt"), startDate));
       }
@@ -47,15 +47,15 @@ public class MedicineBatchSpecification {
         predicates.add(builder.lessThanOrEqualTo(root.get("createAt"), endDate));
       }
 
-      // Lọc theo trạng thái active (dựa vào trường deleteAt)
-      if (isActive != null) {
-        if (isActive) {
-          predicates.add(builder.isNull(root.get("deleteAt")));
-        } else {
-          predicates.add(builder.isNotNull(root.get("deleteAt")));
-        }
+      // Thêm logic mặc định: loại bỏ bản ghi có `deleteAt != NULL` nếu `isActive !=
+      // false`
+      if (isActive == null || isActive) {
+        predicates.add(builder.isNull(root.get("deleteAt"))); // Chỉ lấy bản ghi chưa bị xóa
+      } else {
+        predicates.add(builder.isNotNull(root.get("deleteAt"))); // Chỉ lấy bản ghi đã bị xóa
       }
 
+      // Trả về tất cả điều kiện kết hợp bằng `AND`
       return builder.and(predicates.toArray(new Predicate[0]));
     };
   }
