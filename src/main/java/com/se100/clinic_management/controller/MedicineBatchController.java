@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,7 +61,8 @@ public class MedicineBatchController {
       @RequestParam(required = false) LocalDateTime startDate,
       @RequestParam(required = false) LocalDateTime endDate,
       @RequestParam(required = false) Boolean isActive,
-      Pageable pageable) {
+      @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+
     return medicineBatchService.getMedicineBatches(medicineId, isExpired, startDate, endDate, isActive, pageable);
   }
 }

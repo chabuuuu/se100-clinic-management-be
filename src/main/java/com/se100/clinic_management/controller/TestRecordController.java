@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,7 @@ public class TestRecordController {
     private final iTestRecordService testRecordService;
 
     @GetMapping("{id}")
-    public ResponseEntity<ResponseVO> getTestRecordById
-            (@PathVariable  int id) {
+    public ResponseEntity<ResponseVO> getTestRecordById(@PathVariable int id) {
         TestRecordDto testRecordDto = testRecordService.getTestRecordById(id);
         return ResponseEntityGenerator.findOneFormat(testRecordDto);
     }
@@ -38,9 +38,10 @@ public class TestRecordController {
             @RequestParam(required = false) String state,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate,
-            Pageable pageable
-    ){
-        Page<TestRecordDto> testRecordDtos = testRecordService.getTestRecords(id, patientName, technicianName, state, fromDate, toDate, pageable);
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+
+        Page<TestRecordDto> testRecordDtos = testRecordService.getTestRecords(id, patientName, technicianName, state,
+                fromDate, toDate, pageable);
         return ResponseEntity.ok(testRecordDtos);
     }
 
@@ -53,8 +54,7 @@ public class TestRecordController {
     @PutMapping("/update/{id}")
     public ResponseEntity<ResponseVO> updateTestRecord(
             @PathVariable int id,
-            @RequestBody TestRecord testRecord
-    ) {
+            @RequestBody TestRecord testRecord) {
         testRecordService.updateTestRecord(id, testRecord);
         return ResponseEntityGenerator.updateFormat("Update success");
     }
