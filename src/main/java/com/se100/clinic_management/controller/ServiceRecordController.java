@@ -11,6 +11,7 @@ import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,22 +31,21 @@ public class ServiceRecordController {
             @RequestParam(required = false) String receptionistName,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate,
-            Pageable pageable
-    ) {
-        return serviceRecordService.getServiceRecords(serviceRecordId, patientName, receptionistName, fromDate, toDate, pageable);
+            @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+
+        return serviceRecordService.getServiceRecords(serviceRecordId, patientName, receptionistName, fromDate, toDate,
+                pageable);
     }
 
     @GetMapping("detail/{serviceRecordId}")
     public ServiceRecordDetailDto getServiceRecordDetail(
-            @PathVariable int serviceRecordId
-    ) {
+            @PathVariable int serviceRecordId) {
         return serviceRecordService.getServiceRecordDetail(serviceRecordId);
     }
 
     @PostMapping("")
     public ResponseEntity<ResponseVO> createServiceRecord(
-            @RequestBody CreateServiceRecordReq serviceRecord
-    ) {
+            @RequestBody CreateServiceRecordReq serviceRecord) {
         ServiceRecordDto result = serviceRecordService.createServiceRecord(serviceRecord);
 
         return ResponseEntityGenerator.createdFormat(result);
@@ -54,8 +54,7 @@ public class ServiceRecordController {
     @PutMapping("{serviceRecordId}")
     public ResponseEntity<ResponseVO> updateServiceRecord(
             @PathVariable int serviceRecordId,
-            @RequestBody CreateServiceRecordReq serviceRecord
-    ) {
+            @RequestBody CreateServiceRecordReq serviceRecord) {
         serviceRecordService.updateServiceRecord(serviceRecordId, serviceRecord);
 
         return ResponseEntityGenerator.okFormat("Update service record successfully");
@@ -63,8 +62,7 @@ public class ServiceRecordController {
 
     @DeleteMapping("{serviceRecordId}")
     public ResponseEntity<ResponseVO> deleteServiceRecord(
-            @PathVariable int serviceRecordId
-    ) {
+            @PathVariable int serviceRecordId) {
         serviceRecordService.deleteServiceRecord(serviceRecordId);
 
         return ResponseEntityGenerator.okFormat("Delete service record successfully");

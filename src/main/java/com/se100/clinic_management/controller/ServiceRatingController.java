@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +58,8 @@ public class ServiceRatingController {
       @RequestParam(required = false) Integer patientId,
       @RequestParam(required = false) LocalDateTime createdAfter,
       @RequestParam(required = false) LocalDateTime createdBefore,
-      Pageable pageable) {
+      @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+
     Page<ServiceRating> ratings = serviceRatingService.getRatings(minScore, maxScore, patientId,
         createdAfter, createdBefore, pageable);
     return new ResponseEntity<>(ratings, HttpStatus.OK);

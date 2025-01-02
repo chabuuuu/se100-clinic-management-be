@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +57,7 @@ public class PatientController {
       @RequestParam(required = false) Integer minAge,
       @RequestParam(required = false) Integer maxAge,
       @RequestParam(required = false) String search,
-      Pageable pageable) {
+      @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
 
     LocalDate createdAfterDate = createdAfter != null ? LocalDate.parse(createdAfter) : null;
     LocalDate createdBeforeDate = createdBefore != null ? LocalDate.parse(createdBefore) : null;

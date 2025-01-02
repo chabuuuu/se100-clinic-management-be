@@ -33,7 +33,8 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
     @Autowired
     ServiceRecordRepository serviceRecordRepository;
 
-    @Autowired iPrescriptionService prescriptionService;
+    @Autowired
+    iPrescriptionService prescriptionService;
 
     @Autowired
     iTestRecordService testRecordService;
@@ -54,7 +55,8 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
             serviceRecordDetailDto.setPatient(modelMapper.map(serviceRecord.getPatient(), PatientDto.class));
         }
         if (serviceRecord.getReceptionist() != null) {
-            serviceRecordDetailDto.setReceptionist(modelMapper.map(serviceRecord.getReceptionist(), EmployeeProfileDTO.class));
+            serviceRecordDetailDto
+                    .setReceptionist(modelMapper.map(serviceRecord.getReceptionist(), EmployeeProfileDTO.class));
         }
 
         List<TestRecord> testRecords = serviceRecord.getTestRecords();
@@ -73,17 +75,16 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
             examRecordDetailRes.add(examRecordService.convertToExamRecordDetailRes(examRecord));
         }
 
-        //Set prescriptions
+        // Set prescriptions
         serviceRecordDetailDto.setPrescriptions(prescriptionDetailDtos);
 
-        //Set exam records
+        // Set exam records
         serviceRecordDetailDto.setExamRecords(examRecordDetailRes);
 
-        //Set test records
+        // Set test records
         serviceRecordDetailDto.setTestRecords(testRecordDtos);
 
-
-        //Set base field
+        // Set base field
         serviceRecordDetailDto.setCreateAt(serviceRecord.getCreateAt());
         serviceRecordDetailDto.setUpdateAt(serviceRecord.getUpdateAt());
         serviceRecordDetailDto.setCreatedBy(serviceRecord.getCreatedBy());
@@ -101,10 +102,11 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
             serviceRecordDto.setPatient(modelMapper.map(serviceRecord.getPatient(), PatientDto.class));
         }
         if (serviceRecord.getReceptionist() != null) {
-            serviceRecordDto.setReceptionist(modelMapper.map(serviceRecord.getReceptionist(), EmployeeProfileDTO.class));
+            serviceRecordDto
+                    .setReceptionist(modelMapper.map(serviceRecord.getReceptionist(), EmployeeProfileDTO.class));
         }
 
-        //Set base field
+        // Set base field
         serviceRecordDto.setCreateAt(serviceRecord.getCreateAt());
         serviceRecordDto.setUpdateAt(serviceRecord.getUpdateAt());
         serviceRecordDto.setCreatedBy(serviceRecord.getCreatedBy());
@@ -114,33 +116,31 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
     }
 
     @Override
-    public Page<ServiceRecordDto> getServiceRecords(Integer serviceRecordId, String patientName, String receptionistName, Date fromDate, Date toDate, Pageable pageable) {
-        Specification<ServiceRecord> spec = ServiceRecordSpecification.filter(serviceRecordId, patientName, receptionistName, fromDate, toDate);
-
+    public Page<ServiceRecordDto> getServiceRecords(Integer serviceRecordId, String patientName,
+            String receptionistName, Date fromDate, Date toDate, Pageable pageable) {
+        Specification<ServiceRecord> spec = ServiceRecordSpecification.filter(serviceRecordId, patientName,
+                receptionistName, fromDate, toDate);
 
         Page<ServiceRecord> result = serviceRecordRepository.findAll(spec, pageable);
 
-
-
         return result.map(this::convertToServiceRecordDto);
     }
-
 
     @Override
     public ServiceRecordDetailDto getServiceRecordDetail(int serviceRecordId) {
         ServiceRecord result = serviceRecordRepository.findById(serviceRecordId).orElse(null);
 
-        //Remove sensitive information like password of receptionist
+        // Remove sensitive information like password of receptionist
         if (result != null) {
             result.getReceptionist().setPassword(null);
         }
-        //Caculate total
+        // Caculate total
         Float total = 0f;
         Float totalPrescription = 0f;
         Float totalTest = 0f;
         Float totalExam = 0f;
 
-        //Caculate total of prescriptions
+        // Caculate total of prescriptions
         for (Prescription prescription : result.getPrescriptions()) {
             if (prescription.getTotal() != null) {
                 total += prescription.getTotal();
@@ -148,14 +148,14 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
             }
         }
 
-        //Caculate total of test records
+        // Caculate total of test records
         for (TestRecord testRecord : result.getTestRecords()) {
             ServiceType serviceType = testRecord.getServiceType();
             total += serviceType.getPrice().floatValue();
             totalTest += serviceType.getPrice().floatValue();
         }
 
-        //Caculate total of exam records
+        // Caculate total of exam records
         for (ExamRecord examRecord : result.getExamRecords()) {
             ServiceType serviceType = examRecord.getServiceType();
             total += serviceType.getPrice().floatValue();
@@ -164,7 +164,7 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
 
         ServiceRecordDetailDto serviceRecordDetailDto = convertToServiceRecordDetailDto(result);
 
-        //Set total
+        // Set total
         if (serviceRecordDetailDto == null) {
             serviceRecordDetailDto = new ServiceRecordDetailDto();
         }
@@ -217,28 +217,29 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
     public Float getTotalServiceFee(int serviceRecordId) {
         ServiceRecord result = serviceRecordRepository.findById(serviceRecordId).orElse(null);
 
-        //Caculate total
+        // Caculate total
         Float total = 0f;
 
-        //Caculate total of prescriptions
+        // Caculate total of prescriptions
         for (Prescription prescription : result.getPrescriptions()) {
             if (prescription.getTotal() != null) {
                 total += prescription.getTotal();
             }
         }
 
-        //Caculate total of test records
+        // Caculate total of test records
         for (TestRecord testRecord : result.getTestRecords()) {
             ServiceType serviceType = testRecord.getServiceType();
             total += serviceType.getPrice().floatValue();
         }
 
-        //Caculate total of exam records
+        // Caculate total of exam records
         for (ExamRecord examRecord : result.getExamRecords()) {
             ServiceType serviceType = examRecord.getServiceType();
             total += serviceType.getPrice().floatValue();
         }
 
-        return total;    }
+        return total;
+    }
 
 }

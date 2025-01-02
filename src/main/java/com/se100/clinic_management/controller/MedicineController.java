@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 @RequestMapping("/api/medicines")
@@ -62,7 +63,9 @@ public class MedicineController {
       @RequestParam(required = false) String ingredient,
       @RequestParam(required = false) String dosageForm,
       @RequestParam(required = false) BigDecimal minPrice,
-      @RequestParam(required = false) BigDecimal maxPrice, Pageable pageable) {
+      @RequestParam(required = false) BigDecimal maxPrice,
+      @PageableDefault(size = Integer.MAX_VALUE, page = 0) Pageable pageable) {
+
     return medicineService.getMedicines(name, dosageForm, updatedAfter, dosageForm, dosageForm, maxPrice, maxPrice,
         pageable);
   }
