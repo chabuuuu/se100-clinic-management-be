@@ -15,7 +15,6 @@ import com.se100.clinic_management.dto.test_record.TestRecordDto;
 import com.se100.clinic_management.model.*;
 import com.se100.clinic_management.repository.ServiceRecordRepository;
 import com.se100.clinic_management.specification.ServiceRecordSpecification;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -169,7 +168,7 @@ public class ServiceRecordServiceImpl implements iServiceRecordService {
             serviceRecordDetailDto = new ServiceRecordDetailDto();
         }
         serviceRecordDetailDto.setTotal(total);
-        serviceRecordDetailDto.setExamTotal(totalPrescription);
+        serviceRecordDetailDto.setPrescriptionTotal(totalPrescription);
         serviceRecordDetailDto.setTestTotal(totalTest);
         serviceRecordDetailDto.setExamTotal(totalExam);
 
