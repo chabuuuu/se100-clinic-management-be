@@ -11,14 +11,18 @@ import com.se100.clinic_management.enums.RoleEnum;
 import com.se100.clinic_management.exception.BaseError;
 import com.se100.clinic_management.model.Employee;
 import com.se100.clinic_management.model.ExamRecord;
+import com.se100.clinic_management.model.Medicine;
 import com.se100.clinic_management.model.Prescription;
 import com.se100.clinic_management.model.PrescriptionDetail;
 import com.se100.clinic_management.model.ServiceRecord;
+import com.se100.clinic_management.model.ServiceType;
 import com.se100.clinic_management.repository.EmployeeRepository;
 import com.se100.clinic_management.repository.ExamRecordRepository;
+import com.se100.clinic_management.repository.MedicineRepository;
 import com.se100.clinic_management.repository.PrescriptionDetailRepository;
 import com.se100.clinic_management.repository.PrescriptionRepository;
 import com.se100.clinic_management.repository.ServiceRecordRepository;
+import com.se100.clinic_management.repository.ServiceTypeRepository;
 import com.se100.clinic_management.specification.PrescriptionSpecification;
 import com.se100.clinic_management.utils.PageUtil;
 import com.se100.clinic_management.utils.SecurityUtil;
@@ -32,6 +36,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +56,12 @@ public class PrescriptionService implements iPrescriptionService {
 
     @Autowired
     private ServiceRecordRepository serviceRecordRepository;
+
+    @Autowired
+    private ServiceTypeRepository serviceTypeRepository;
+
+    @Autowired
+    private MedicineRepository medicineRepository;
 
     @Override
     public PrescriptionDetailDto convertPrescriptionToDto(Prescription prescription) {
@@ -156,6 +167,26 @@ public class PrescriptionService implements iPrescriptionService {
             }
             prescription.setExamRecord(examRecord);
         }
+
+        // Calculate total
+        Float total = 0f;
+        for (CreatePrescriptionReq.PrescriptionDetailDto prescriptionDetailDto : createPrescriptionReq
+                .getPrescriptionDetails()) {
+            Medicine medicine = medicineRepository.findById(prescriptionDetailDto.getMedicineId()).orElse(null);
+            if (medicine == null) {
+                throw new BaseError("MEDICINE_NOT_FOUND", "Medicine not found", HttpStatus.NOT_FOUND);
+            }
+            total += BigDecimal.valueOf(prescriptionDetailDto.getAmount()).multiply(medicine.getPrice()).floatValue();
+        }
+        ServiceType serviceType = serviceTypeRepository.findById(createPrescriptionReq.getServiceTypeId()).orElse(null);
+
+        if (serviceType == null) {
+            throw new BaseError("SERVICE_TYPE_NOT_FOUND", "Service type not found", HttpStatus.NOT_FOUND);
+        }
+
+        total += serviceType.getPrice().floatValue();
+
+        prescription.setTotal(total);
 
         // Set status
         prescription.setStatus(PrescriptionStatus.PENDING);
