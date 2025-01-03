@@ -2,7 +2,10 @@ package com.se100.clinic_management.service;
 
 import com.se100.clinic_management.Interface.iEmployeeService;
 import com.se100.clinic_management.Interface.iInvoiceService;
+import com.se100.clinic_management.constants.ExamRecordStatus;
+import com.se100.clinic_management.constants.InvoiceStatus;
 import com.se100.clinic_management.constants.RoleConst;
+import com.se100.clinic_management.constants.prescription.PrescriptionStatus;
 import com.se100.clinic_management.dto.JwtTokenVo;
 import com.se100.clinic_management.dto.PatientDto;
 import com.se100.clinic_management.dto.ServiceRecordDetailDto;
@@ -11,14 +14,20 @@ import com.se100.clinic_management.dto.invoice.CreateInvoiceReq;
 import com.se100.clinic_management.dto.invoice.InvoiceDetailDto;
 import com.se100.clinic_management.dto.invoice.InvoiceDto;
 import com.se100.clinic_management.dto.invoice.UpdateInvoiceStatusReq;
+import com.se100.clinic_management.enums.ExamRecordStatusEnum;
+import com.se100.clinic_management.enums.InvoiceStatusEnum;
+import com.se100.clinic_management.enums.TestRecordStatusEnum;
 import com.se100.clinic_management.exception.BaseError;
 import com.se100.clinic_management.model.Employee;
 import com.se100.clinic_management.model.Invoice;
 import com.se100.clinic_management.model.Patient;
 import com.se100.clinic_management.model.ServiceRecord;
 import com.se100.clinic_management.repository.EmployeeRepository;
+import com.se100.clinic_management.repository.ExamRecordRepository;
 import com.se100.clinic_management.repository.InvoiceRepository;
+import com.se100.clinic_management.repository.PrescriptionRepository;
 import com.se100.clinic_management.repository.ServiceRecordRepository;
+import com.se100.clinic_management.repository.TestRecordRepository;
 import com.se100.clinic_management.specification.InvoiceSpecification;
 import com.se100.clinic_management.utils.SecurityUtil;
 import lombok.NoArgsConstructor;
@@ -45,6 +54,15 @@ public class InvoiceServiceImpl implements iInvoiceService {
     private EmployeeRepository employeeRepository;
     @Autowired
     private ServiceRecordRepository serviceRecordRepository;
+
+    @Autowired
+    private ExamRecordRepository examRecordRepository;
+
+    @Autowired
+    private PrescriptionRepository prescriptionRepository;
+
+    @Autowired
+    private TestRecordRepository testRecordRepository;
 
     @SneakyThrows
     @Override
@@ -157,6 +175,29 @@ public class InvoiceServiceImpl implements iInvoiceService {
             throw new BaseError("INVOICE_NOT_FOUND", "Invoice not found", HttpStatus.BAD_REQUEST);
         }
         invoice.setStatus(updateInvoiceStatusReq.getStatus());
+
+        if (invoice.getStatus().equals(InvoiceStatusEnum.PAID.toString())) {
+            ServiceRecord serviceRecord = invoice.getServiceRecord();
+
+            // Update prescription status
+            serviceRecord.getPrescriptions().forEach(prescription -> {
+                prescription.setStatus(PrescriptionStatus.PAID.toString());
+                prescriptionRepository.save(prescription);
+            });
+
+            // Update exam record status
+            serviceRecord.getExamRecords().forEach(examRecord -> {
+                examRecord.setStatus(ExamRecordStatusEnum.FINISH.toString());
+                examRecordRepository.save(examRecord);
+            });
+
+            // Update test record
+            serviceRecord.getTestRecords().forEach(testRecord -> {
+                testRecord.setState(TestRecordStatusEnum.PAID.toString());
+                testRecordRepository.save(testRecord);
+            });
+        }
+
         invoiceRepository.save(invoice);
         return;
     }
